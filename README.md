@@ -1,5 +1,5 @@
 # three.js-GUI-engine
-gui.js [v0.1]
+gui.js [v0.2]
 GUI engine for three.js. It allows create interfaces by WebGL via three.js.
 
 Element form specifies geometry property.
