@@ -1,4 +1,4 @@
-var GUI = { VERSION: '0.1' };
+var GUI = { VERSION: '0.2' };
 GUI.raycaster = new THREE.Raycaster();
 GUI.stopEvent = function (event) 
 {
@@ -62,11 +62,20 @@ GUI.MouseMove = function ( mousepos, orthocamera, scene ) // parameter - THREE.V
 	if (intersects.length>0)
 	{
 		intersects[0].object.parent.onmouseover(intersects[0].object);
+		
+		
+		bufcursor = intersects[0].object.parent.cursor;
+		
 		if ((!(intersects[0].object.parent instanceof GUI.Panel))&&(!(intersects[0].object.parent instanceof GUI.Label))&&
 		(!(intersects[0].object.parent instanceof GUI.Icon))&&(!(intersects[0].object.parent instanceof GUI.RadioGroup))&&
 		(!((intersects[0].object.parent instanceof GUI.DialogBox)&&((intersects[0].object==intersects[0].object.parent.children[0])||(intersects[0].object==intersects[0].object.parent.children[1])))))
 		{
 			bufcursor = 'pointer';
+		}
+		else
+		{
+			// кастомный курсор сделан для GUI.Panel, GUI.Label, GUI.Icon, GUI.RadioGroup, GUI.DialogBox
+			if (intersects[0].object.parent.cursor!=undefined) bufcursor = intersects[0].object.parent.cursor;
 		}
 		if (intersects[0].object.parent instanceof GUI.RadioGroup)
 		{
@@ -177,6 +186,7 @@ GUI.Button = function ( parameters )
 	THREE.Object3D.call( this );
 	parameters = parameters || {};
 	this.objectPosition = new THREE.Vector3();
+	this.cursor = parameters.cursor !== undefined ? parameters.cursor : "pointer";
 	this.text = parameters.text !== undefined ? parameters.text : "button";
 	this.csstextcolor = parameters.textcolor !== undefined ? parameters.textcolor : "#ffffff";
 	this.cssfont = parameters.font !== undefined ? parameters.font : '16px sans-serif';
@@ -290,6 +300,7 @@ GUI.Panel = function ( parameters )
 	THREE.Object3D.call( this );
 	parameters = parameters || {};
 	this.objectPosition = new THREE.Vector3();
+	this.cursor = parameters.cursor !== undefined ? parameters.cursor : "default";
 	var geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneBufferGeometry(100,25);
 	var material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x444444 });
 	var base =  new THREE.Mesh(geometry, material);
@@ -363,6 +374,7 @@ GUI.Label = function ( parameters )
 	THREE.Object3D.call( this );
 	parameters = parameters || {};
 	this.objectPosition = new THREE.Vector3();
+	this.cursor = parameters.cursor !== undefined ? parameters.cursor : "default";
 	this.text = parameters.text !== undefined ? parameters.text : "label";
 	this.csstextcolor = parameters.textcolor !== undefined ? parameters.textcolor : "#000000";
 	this.cssfont = parameters.font !== undefined ? parameters.font : '16px sans-serif';
@@ -466,6 +478,7 @@ GUI.Icon = function ( parameters )
 	THREE.Object3D.call( this );
 	parameters = parameters || {};
 	this.objectPosition = new THREE.Vector3();
+	this.cursor = parameters.cursor !== undefined ? parameters.cursor : "default";
 	var texture = parameters.texture !== undefined ? parameters.texture : new THREE.Texture( );
 	texture.minFilter = THREE.LinearFilter;
 	var geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneBufferGeometry(texture.image.width,texture.image.height);
@@ -539,6 +552,7 @@ GUI.RadioGroup = function ( parameters )
 	THREE.Object3D.call( this );
 	parameters = parameters || {};
 	this.objectPosition = new THREE.Vector3();
+	this.cursor = parameters.cursor !== undefined ? parameters.cursor : "default";
 	var geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.CircleBufferGeometry(12.5,16);
 	var material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0xffffff });
 	var base =  new THREE.Mesh(geometry, material);
@@ -603,6 +617,7 @@ GUI.RadioButton = function ( parameters )
 	THREE.Object3D.call( this );
 	parameters = parameters || {};
 	this.objectPosition = new THREE.Vector3();
+	this.cursor = parameters.cursor !== undefined ? parameters.cursor : "pointer";
 	// RadioButton должен принадлежать к какой-либо группе, т.к это взаимоисключающая кнопка
 	this.group = parameters.group; // GUI.RadioGroup
 	var geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.CircleBufferGeometry(25,32);
@@ -736,6 +751,7 @@ GUI.CheckBox = function ( parameters )
 	THREE.Object3D.call( this );
 	parameters = parameters || {};
 	this.objectPosition = new THREE.Vector3();
+	this.cursor = parameters.cursor !== undefined ? parameters.cursor : "pointer";
 	var geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneBufferGeometry(50,50);
 	var material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x666666 });
 	var base =  new THREE.Mesh(geometry, material);
@@ -865,6 +881,7 @@ GUI.EditBox = function ( parameters )
 	THREE.Object3D.call( this );
 	parameters = parameters || {};
 	this.objectPosition = new THREE.Vector3();
+	this.cursor = parameters.cursor !== undefined ? parameters.cursor : "pointer";
 	var geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneBufferGeometry(100,25);
 	var material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0xcccccc });
 	var base =  new THREE.Mesh(geometry, material);
@@ -1021,6 +1038,7 @@ GUI.ScrollBar = function ( parameters )
 	THREE.Object3D.call( this );
 	parameters = parameters || {};
 	this.objectPosition = new THREE.Vector3();
+	this.cursor = parameters.cursor !== undefined ? parameters.cursor : "pointer";
 	this.above = 1; // скрыто наверху
 	this.below = 1; // скрыто снизу
 	var geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneBufferGeometry(25,25);
@@ -1141,6 +1159,7 @@ GUI.DialogBox = function ( parameters )
 	THREE.Object3D.call( this );
 	parameters = parameters || {};
 	this.objectPosition = new THREE.Vector3();
+	this.cursor = parameters.cursor !== undefined ? parameters.cursor : "default";
 	this.mbtype = parameters.type !== undefined ? parameters.type : 1; // 0 = MB_OK, 1 = MB_OKCANCEL
 	var geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneBufferGeometry(300,167);
 	var material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x333333 });
