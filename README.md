@@ -1,10 +1,10 @@
 # three.js-GUI-engine
 gui.js [v0.2]
-GUI engine for three.js. It allows create interfaces by WebGL via three.js.
+GUI engine for three.js. It allows to create interfaces by WebGL via three.js.
 
-Element form specifies geometry property.
+Element form specifies by geometry property.
 
-Include possibility creating following elements:
+Include possibility to create the following elements:
 
 GUI.Button - button
 
@@ -24,5 +24,5 @@ GUI.ScrollBar - scrollbar
 
 GUI.DialogBox - dialog box 
 
-All elements have redefining methods onmousedown(object), onmouseup(object), onmouseover(object), onmouseout(object), where object - subelement, for which the event occurred.
+All elements have redefinable methods onmousedown(object), onmouseup(object), onmouseover(object), onmouseout(object), where object is subelement, for which the event has been occurred.
 
