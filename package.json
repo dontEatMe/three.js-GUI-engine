@@ -1,0 +1,35 @@
+{
+  "name": "three.js-gui-engine",
+  "version": "0.3.0",
+  "description": "GUI engine for three.js",
+  "main": "./index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack --mode=development",
+    "prod": "webpack --mode=production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dontEatMe/three.js-GUI-engine"
+  },
+  "keywords": [
+    "GUI",
+    "HUD",
+    "engine",
+    "three.js"
+  ],
+  "author": "dontEatMe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dontEatMe/three.js-GUI-engine/issues"
+  },
+  "homepage": "https://github.com/dontEatMe/three.js-GUI-engine#readme",
+  "dependencies": {
+    "three": "^0.155.0"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^11.0.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
+}
