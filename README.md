@@ -20,7 +20,7 @@ All elements have redefinable methods onmousedown(object), onmouseup(object), on
 Element form specifies by geometry property.  
 
 Install:  
-npm Install  
+npm install  
 
 Build:  
 npm run dev  

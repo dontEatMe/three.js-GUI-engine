@@ -176,13 +176,10 @@ function animation( time ) {
 	if (Math.round(time).toString() != label1.text) {
 		label1.text = Math.round(time).toString();
 	}
-
-	//mesh1.position.x = time/20;
 	
 	renderer.clear( true, true, true );
 	renderer.render( scene, camera );
 	renderer.render( interfaceScene, interfaceCamera );
-
 }
 
 function onKeyDown(event) {
