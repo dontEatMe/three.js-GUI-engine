@@ -131,7 +131,9 @@ scrollbar1.position.set( -300, 0, 0 );
 interfaceScene.add(scrollbar1);
 
 const upscrl = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-20, 0, 0), new THREE.Vector3(0, -20, 0), new THREE.Vector3(20, 0, 0)]);
+upscrl.center();
 const downscrl = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-20, 0, 0), new THREE.Vector3(20, 0, 0), new THREE.Vector3(0, 20, 0)]);
+downscrl.center();
 const scrollbar2 = new GUI.ScrollBar({ upGeometry: upscrl,  downGeometry: downscrl });
 scrollbar2.above=4;
 scrollbar2.position.set(-250,0,0);
