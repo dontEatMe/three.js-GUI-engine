@@ -81,9 +81,13 @@ function MouseMove ( canvas, mousepos, orthocamera, scene ) { // parameter - THR
 	
 	intersects.some((intersect) => {
 		if (checkParentsVisibility(intersect.object) === true) {
-			intersect.object.parent.onmouseover(intersect.object);
-			bufcursor = intersect.object.parent.cursor;
-			return true;
+			if (intersect.object.parent.isGroup !== true) {
+				intersect.object.parent.onmouseover(intersect.object);
+				bufcursor = intersect.object.parent.cursor;
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
