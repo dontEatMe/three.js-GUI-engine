@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { FontLoader } from 'three/addons/loaders/FontLoader';
-import * as GUI from './src/Gui';
+import * as GUI from 'three.js-gui-engine/src/Gui'; // TODO move this example to examles, and export from it file GUI
 import fontJson from './fonts/helvetiker_regular.typeface.json';
 
 // for Firefox
