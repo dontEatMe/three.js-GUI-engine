@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dontEatMe/three.js-GUI-engine"
+    "url": "git+https://github.com/dontEatMe/three.js-GUI-engine.git"
   },
   "keywords": [
     "GUI",
