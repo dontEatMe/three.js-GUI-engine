@@ -63,13 +63,21 @@ class Label extends THREE.Object3D {
 		});
 		textGeometry.computeBoundingBox();
 		let textGeometryWidth = Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+		let textGeometryHeight = Math.abs(textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
 		let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
 		textMesh.position.x = -textGeometryWidth/2;
 		textMesh.position.y = -this.#xHeight/2;
 		this.add(textMesh);
+		// for select from mouse move
+		let boundingPlaneGeometry = new THREE.PlaneGeometry(textGeometryWidth, textGeometryHeight);
+		let boundingPlaneMesh = new THREE.Mesh(boundingPlaneGeometry, new THREE.MeshBasicMaterial( { transparent: true, opacity: 0 } ));
+		boundingPlaneMesh.position.set(textMesh.position.x+textGeometryWidth/2,textMesh.position.y+textGeometryHeight/2,textMesh.position.z,);
+		this.add(boundingPlaneMesh);
 	}
 	#reDraw() {
 		if ( this.threeFont!==undefined ) {
+			this.children[1].geometry.dispose();
+			this.remove(this.children[1]);
 			this.children[0].geometry.dispose();
 			this.remove(this.children[0]);
 			this.#generateTextMesh();
