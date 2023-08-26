@@ -101,6 +101,8 @@ class CheckBox extends THREE.Object3D {
 		if ( this.threeFont!==undefined ) {
 			this.children[2].geometry.dispose();
 			this.remove(this.children[2]);
+			this.children[3].geometry.dispose();
+			this.remove(this.children[3]);
 			this.#generateTextMesh();
 		}
 	}

@@ -88,6 +88,8 @@ class RadioButton extends THREE.Object3D {
 	#reDraw() {
 		if ( this.threeFont!==undefined ) {
 			this.children[1].geometry.dispose();
+			this.remove(this.children[1]);
+			this.children[2].geometry.dispose();
 			this.remove(this.children[2]);
 			this.#generateTextMesh();
 		}
