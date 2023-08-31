@@ -1,7 +1,5 @@
 import * as THREE from 'three';
 import { FontLoader } from 'three/addons/loaders/FontLoader';
-import { TextGeometry } from 'three/addons/geometries/TextGeometry';
-
 import * as GUI from './src/Gui'; // TODO move this example to examles, and export from it file GUI
 import fontJson from './fonts/helvetiker_regular.typeface.json';
 
