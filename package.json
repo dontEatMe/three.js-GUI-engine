@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/dontEatMe/three.js-GUI-engine#readme",
   "dependencies": {
-    "three": "^0.156.1"
+    "three": "^0.157.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",
