@@ -1,5 +1,5 @@
 # three.js-GUI-engine
-gui.js [v0.3.0]  
+v0.3.0  
 GUI engine for three.js. It allows to create interfaces by WebGL via three.js.  
 
 [example](https://gui.lvlb.ru) (see index.js)  
