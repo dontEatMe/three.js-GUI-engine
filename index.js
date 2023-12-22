@@ -1,24 +1,7 @@
 import * as THREE from 'three';
 import { FontLoader } from 'three/addons/loaders/FontLoader';
-import * as GUI from './src/Gui'; // TODO move this example to examles, and export from it file GUI
+import * as GUI from './src/Gui'; // TODO move this example to examples, and export from it file GUI
 import fontJson from './fonts/helvetiker_regular.typeface.json';
-
-// for Firefox
-function getOffset( evt ) {
-	if ( evt.offsetX != undefined ) {
-		return {x:evt.offsetX,y:evt.offsetY};
-	}
-	let el = evt.target;
-	let offset = new THREE.Vector2();
-	while( el.offsetParent ) {
-		offset.x+=el.offsetLeft;
-		offset.y+=el.offsetTop;
-		el = el.offsetParent;
-	}
-	offset.x = evt.pageX - offset.x;
-	offset.y = evt.pageY - offset.y;
-	return offset;
-}
 
 // init
 const fontLoader = new FontLoader();
@@ -193,21 +176,18 @@ function KeyPress(event) {
 }
 
 function onMouseMove( event ) {
-	const offset = getOffset( event );
-	const mousepos = new THREE.Vector2( (offset.x / container.width ) * 2 - 1, -(offset.y / container.height ) * 2 + 1 );
+	const mousepos = new THREE.Vector2( (event.offsetX / container.width) * 2 - 1, -(event.offsetY / container.height) * 2 + 1 );
 	GUI.MouseMove( container, mousepos, interfaceCamera, interfaceScene );
 }
 
 function onMouseUp(event) {
-	var offset = getOffset(event);
-	var mousepos = new THREE.Vector2( (offset.x / container.width ) * 2 - 1, -(offset.y / container.height ) * 2 + 1 );
-	GUI.MouseUp(mousepos, interfaceCamera, interfaceScene);
+	var mousepos = new THREE.Vector2( (event.offsetX / container.width) * 2 - 1, -(event.offsetY / container.height) * 2 + 1 );
+	GUI.MouseUp( mousepos, interfaceCamera, interfaceScene );
 }
 
 function onMouseDown(event) {
-	var offset = getOffset(event);
-	var mousepos = new THREE.Vector2( (offset.x / container.width ) * 2 - 1, -(offset.y / container.height ) * 2 + 1 );
-	GUI.MouseDown(mousepos, interfaceCamera, interfaceScene);
+	var mousepos = new THREE.Vector2( (event.offsetX / container.width) * 2 - 1, -(event.offsetY / container.height) * 2 + 1 );
+	GUI.MouseDown( mousepos, interfaceCamera, interfaceScene );
 }
 
 function onMouseWheel(event) {
