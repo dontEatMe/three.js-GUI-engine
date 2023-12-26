@@ -1,8 +1,8 @@
 # three.js-GUI-engine
-v0.3.0  
+v0.3.2  
 GUI engine for three.js. It allows to create interfaces by WebGL via three.js.  
 
-[example](https://gui.lvlb.ru) (see index.js)  
+[example](https://gui.lvlb.ru) (see example folder)  
 
 Allows to create the following elements:  
 
@@ -19,9 +19,9 @@ GUI.Icon - image
 All elements have redefinable methods onmousedown(object), onmouseup(object), onmouseover(object), onmouseout(object), where object is subelement for which the event has been occurred.  
 Element form specifies by geometry property.  
 
-Install:  
+example install:  
 npm install  
 
-Build:  
+example build:  
 npm run dev  
-npm run prod  
+npm run prod
