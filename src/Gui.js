@@ -1,13 +1,13 @@
 import * as THREE from 'three';
-import Button from './Button';
-import CheckBox from './CheckBox';
-import EditBox from './EditBox';
-import Panel from './Panel';
-import Icon from './Icon';
-import RadioGroup from './RadioGroup';
-import RadioButton from './RadioButton';
-import Label from './Label';
-import ScrollBar from './ScrollBar';
+import Button from './Button.js';
+import CheckBox from './CheckBox.js';
+import EditBox from './EditBox.js';
+import Panel from './Panel.js';
+import Icon from './Icon.js';
+import RadioGroup from './RadioGroup.js';
+import RadioButton from './RadioButton.js';
+import Label from './Label.js';
+import ScrollBar from './ScrollBar.js';
 
 const VERSION = '0.3.0';
 
