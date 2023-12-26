@@ -73,12 +73,12 @@ radiogroup1.position.set(0,-80,1);
 	radiogroup1.add(radiobutton2);
 interfaceScene.add(radiogroup1);
 
-const radiogroup2 = new GUI.RadioGroup({ geometry: new THREE.PlaneGeometry(110,25), material: new THREE.MeshBasicMaterial({color:0x888888})} );
+const radiogroup2 = new GUI.RadioGroup({ geometry: new THREE.PlaneGeometry(110,25), material: new THREE.MeshBasicMaterial({color:0x888888})});
 radiogroup2.position.set(180,-80,1);
-	const radiobutton3 = new GUI.RadioButton({threeFont: font, geometry:new THREE.PlaneGeometry(50,50)});
+	const radiobutton3 = new GUI.RadioButton({threeFont: font, geometry: new THREE.PlaneGeometry(50,50)});
 	radiobutton3.position.set(0,30,0);
 	radiogroup2.add(radiobutton3);
-	const radiobutton4 = new GUI.RadioButton({threeFont: font, geometry:new THREE.PlaneGeometry(50,50)});
+	const radiobutton4 = new GUI.RadioButton({threeFont: font, geometry: new THREE.PlaneGeometry(50,50)});
 	radiobutton4.position.set(0,-30,0);
 	radiogroup2.add(radiobutton4);
 	radiogroup2.selectedRadioButton = radiobutton4;

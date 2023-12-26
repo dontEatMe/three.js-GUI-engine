@@ -1,6 +1,6 @@
 {
   "name": "three.js-gui-engine",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "GUI engine for three.js",
   "main": "./index.js",
   "scripts": {
