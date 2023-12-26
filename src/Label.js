@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { TextGeometry } from 'three/addons/geometries/TextGeometry';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 class Label extends THREE.Object3D {
 	#text;
