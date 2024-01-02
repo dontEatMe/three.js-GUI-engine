@@ -34,7 +34,7 @@ class EditBox extends THREE.Object3D {
 	}
 	set textColor (color) {
 		this.#textColor = color;
-		this.children[1].material.color.setHex(this.#textColor);
+		this.children[1].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
 	}
 	get isPlaceholder () {
 		return ((this.#active === false) && (this.#text === ''));
@@ -51,7 +51,7 @@ class EditBox extends THREE.Object3D {
 	}
 	set placeholderColor (color) {
 		this.#placeholderColor = color;
-		this.#reDraw();
+		this.children[1].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
 	}
 	constructor( parameters ) {
 		super();
@@ -64,7 +64,7 @@ class EditBox extends THREE.Object3D {
 		this.#active = false;
 		this.limit = parameters.limit !== undefined ? parameters.limit : 50;
 		this.#placeholder = parameters.placeholder !== undefined ? parameters.placeholder : ''; // TODO getter/setter
-		this.#placeholderColor = parameters.textColor !== undefined ? parameters.placeholderColor : 0x444444;
+		this.#placeholderColor = parameters.placeholderColor !== undefined ? parameters.placeholderColor : 0x444444;
 		this.password = parameters.password !== undefined ? parameters.password : false;
 		// create TextGeometry with default 100 size for get bounding box
 		// use 'x' as symbol for x-height distance calculation
