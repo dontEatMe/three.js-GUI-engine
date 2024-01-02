@@ -14,7 +14,7 @@ container.onmousemove = onMouseMove;
 container.onmouseup = onMouseUp;
 container.onmousedown = onMouseDown;
 container.onmousewheel = onMouseWheel;
-container.addEventListener("DOMMouseScroll", onMouseWheel, false); // for firefox
+container.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // for firefox
 document.onkeydown = onKeyDown;
 document.onkeypress = KeyPress;
 

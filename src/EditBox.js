@@ -34,7 +34,7 @@ class EditBox extends THREE.Object3D {
 	}
 	set textColor (color) {
 		this.#textColor = color;
-		this.#reDraw();
+		this.children[1].material.color.setHex(this.#textColor);
 	}
 	get isPlaceholder () {
 		return ((this.#active === false) && (this.#text === ''));

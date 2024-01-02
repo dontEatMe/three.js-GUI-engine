@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "three": "^0.160.0",
-    "three.js-gui-engine": "^0.3.6"
+    "three.js-gui-engine": "^0.3.7"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",
