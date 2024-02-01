@@ -9,7 +9,7 @@ import RadioButton from './RadioButton.js';
 import Label from './Label.js';
 import ScrollBar from './ScrollBar.js';
 
-const VERSION = '0.3.8';
+const VERSION = '0.3.9';
 
 const raycaster = new THREE.Raycaster();
 

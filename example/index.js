@@ -181,17 +181,17 @@ function onMouseMove( event ) {
 }
 
 function onMouseUp(event) {
-	var mousepos = new THREE.Vector2( (event.offsetX / container.width) * 2 - 1, -(event.offsetY / container.height) * 2 + 1 );
+	const mousepos = new THREE.Vector2( (event.offsetX / container.width) * 2 - 1, -(event.offsetY / container.height) * 2 + 1 );
 	GUI.MouseUp( mousepos, interfaceCamera, interfaceScene );
 }
 
 function onMouseDown(event) {
-	var mousepos = new THREE.Vector2( (event.offsetX / container.width) * 2 - 1, -(event.offsetY / container.height) * 2 + 1 );
+	const mousepos = new THREE.Vector2( (event.offsetX / container.width) * 2 - 1, -(event.offsetY / container.height) * 2 + 1 );
 	GUI.MouseDown( mousepos, interfaceCamera, interfaceScene );
 }
 
 function onMouseWheel(event) {
-	var delta = event.deltaY || event.detail || event.wheelDelta;
+	let delta = event.deltaY || event.detail || event.wheelDelta;
 	delta = delta/Math.abs(delta);
 	GUI.MouseWheel(delta, interfaceScene);
 }

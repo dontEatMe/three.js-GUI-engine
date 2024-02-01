@@ -17,7 +17,7 @@ class RadioGroup extends THREE.Group {
 	constructor( parameters ) {
 		super();
 		parameters = parameters || {};
-		let geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.CircleGeometry(12.5,16);;
+		let geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.CircleGeometry(12.5,16);
 		let material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0xffffff });
 		let base =  new THREE.Mesh(geometry, material);
 		base.position.z = 1;
