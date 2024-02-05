@@ -84,8 +84,8 @@ class CheckBox extends THREE.Object3D {
 			bevelSegments: 0
 		});
 		textGeometry.computeBoundingBox();
-		let textGeometryWidth = Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
-		let textGeometryHeight = Math.abs(textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
+		let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+		let textGeometryHeight = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
 		let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
 		let checkerWidth = Math.abs(this.children[0].geometry.boundingBox.max.x - this.children[0].geometry.boundingBox.min.x);
 		textMesh.position.x = checkerWidth/2 + checkerWidth/5;
@@ -94,7 +94,7 @@ class CheckBox extends THREE.Object3D {
 		// for select from mouse move
 		let boundingPlaneGeometry = new THREE.PlaneGeometry(textGeometryWidth, textGeometryHeight);
 		let boundingPlaneMesh = new THREE.Mesh(boundingPlaneGeometry, new THREE.MeshBasicMaterial( { transparent: true, opacity: 0 } ));
-		boundingPlaneMesh.position.set(textMesh.position.x+textGeometryWidth/2,textMesh.position.y+textGeometryHeight/2,textMesh.position.z,);
+		boundingPlaneMesh.position.set(textMesh.position.x+textGeometryWidth/2,textMesh.position.y+textGeometryHeight/2,textMesh.position.z);
 		this.add(boundingPlaneMesh);
 	}
 	#reDraw() {

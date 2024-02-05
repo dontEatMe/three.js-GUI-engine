@@ -121,7 +121,7 @@ class EditBox extends THREE.Object3D {
 			bevelSegments: 0
 		});
 		textGeometry.computeBoundingBox();
-		let textGeometryWidth = Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+		let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
 		let boundingBoxWidth = Math.abs(this.children[0].geometry.boundingBox.max.x - this.children[0].geometry.boundingBox.min.x);
 		let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.isPlaceholder ? this.#placeholderColor : this.#textColor, clippingPlanes: [ this.#localPlane ] }) ); // TODO tipColor
 		// clipping plane constant not updated on position set, update it before Mesh render
