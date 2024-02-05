@@ -105,7 +105,7 @@ const editbox1 = new GUI.EditBox( {threeFont: font, placeholder: 'editbox'} );
 editbox1.position.set( 0, 50, 0 );
 interfaceScene.add(editbox1);
 
-const editbox2 = new GUI.EditBox({ password: true, placeholder: 'pass', text:'asf', geometry: new THREE.CircleGeometry(80,32), xHeight: 10, threeFont: font} );
+const editbox2 = new GUI.EditBox({ password: true, placeholder: 'pass', text: 'asf', geometry: new THREE.CircleGeometry(80,32), xHeight: 10, threeFont: font} );
 editbox2.position.set( -150, -50, 0 );
 interfaceScene.add(editbox2);
 	
@@ -126,7 +126,7 @@ scrollbar2.onscrolldown = function() { button1.position.y-=20; }
 
 const dialogBoxGroup = new THREE.Group();
 	const panel2 = new GUI.Panel( { geometry: new THREE.PlaneGeometry(300,167) } );
-	panel2.position.set( 0, 0, 2 );	
+	panel2.position.set( 0, 0, 2 );
 	dialogBoxGroup.add( panel2 );
 	const label3 = new GUI.Label( { text: 'Dialog', textColor: 0xffffff, threeFont: font} ); // threeFont parameter required for text add
 	label3.position.set( 0, 30, 3 );
@@ -138,7 +138,7 @@ const dialogBoxGroup = new THREE.Group();
 	}
 	dialogBoxGroup.add( button3 );
 	dialogBoxGroup.visible = false;
-interfaceScene.add( dialogBoxGroup );
+interfaceScene.add(dialogBoxGroup);
 
 const button4 = new GUI.Button( { text: 'open dialog', threeFont: font } );
 button4.position.set( 100, 0, 0 );
