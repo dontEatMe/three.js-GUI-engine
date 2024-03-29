@@ -71,7 +71,7 @@ class EditBox extends THREE.Object3D {
 		let textGeometry = new TextGeometry('x', {
 			font: this.threeFont,
 			size: 100,
-			height: 0,
+			depth: 0,
 			curveSegments: 4,
 			bevelEnabled: false,
 			bevelThickness: 0,
@@ -112,7 +112,7 @@ class EditBox extends THREE.Object3D {
 		let textGeometry = new TextGeometry(this.isPlaceholder ? this.#placeholder : itemText, {
 			font: this.threeFont,
 			size: this.textSize,
-			height: 0,
+			depth: 0,
 			curveSegments: 4,
 			bevelEnabled: false,
 			bevelThickness: 0,
