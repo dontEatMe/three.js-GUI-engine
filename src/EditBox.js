@@ -105,6 +105,7 @@ class EditBox extends THREE.Object3D {
 		points.push( new THREE.Vector3( 0, (this.#xHeight/2)*2, 0 ) );
 		const cursorGeometry = new THREE.BufferGeometry().setFromPoints( points );
 		const cursorLine = new THREE.Line( cursorGeometry, cursorMaterial );
+		cursorLine.visible = false;
 		this.add(cursorLine);
 		this.#localPlane = new THREE.Plane( new THREE.Vector3( 1, 0, 0 ), 0);
 		if ( this.threeFont!==undefined ) {
