@@ -8,6 +8,7 @@ class EditBox extends THREE.Object3D {
 	#placeholder;
 	#placeholderColor;
 	#active;
+	#activeTime;
 	#localPlane;
 
 	get active () {
@@ -17,6 +18,7 @@ class EditBox extends THREE.Object3D {
 		if (act === false) {
 			this.changeColor(this.bgColor);
 		} else {
+			this.#activeTime = Date.now();
 			this.changeColor( 0xaaaaaa );
 		}
 		this.#active = act;
@@ -26,6 +28,7 @@ class EditBox extends THREE.Object3D {
 		return this.#text;
 	}
 	set text (txt) {
+		this.#activeTime = Date.now();
 		this.#text = txt;
 		this.#reDraw();
 	}
@@ -35,6 +38,7 @@ class EditBox extends THREE.Object3D {
 	set textColor (color) {
 		this.#textColor = color;
 		this.children[1].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
+		this.children[2].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
 	}
 	get isPlaceholder () {
 		return ((this.#active === false) && (this.#text === ''));
@@ -52,6 +56,7 @@ class EditBox extends THREE.Object3D {
 	set placeholderColor (color) {
 		this.#placeholderColor = color;
 		this.children[1].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
+		this.children[2].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
 	}
 	constructor( parameters ) {
 		super();
@@ -62,6 +67,7 @@ class EditBox extends THREE.Object3D {
 		this.#textColor = parameters.textColor !== undefined ? parameters.textColor : 0x000000;
 		this.threeFont = parameters.threeFont!==undefined ? parameters.threeFont : undefined;
 		this.#active = false;
+		this.#activeTime = 0;
 		this.limit = parameters.limit !== undefined ? parameters.limit : 50;
 		this.#placeholder = parameters.placeholder !== undefined ? parameters.placeholder : ''; // TODO getter/setter
 		this.#placeholderColor = parameters.placeholderColor !== undefined ? parameters.placeholderColor : 0x444444;
@@ -91,6 +97,15 @@ class EditBox extends THREE.Object3D {
 		this.bgColor = material.color.getHex(); // TODO getter/setter
 		let base = new THREE.Mesh(geometry, material);
 		this.add(base);
+		const cursorMaterial = new THREE.LineBasicMaterial({
+			color: this.#textColor
+		});
+		const points = [];
+		points.push( new THREE.Vector3( 0, -(this.#xHeight/2)*2 , 0 ) );
+		points.push( new THREE.Vector3( 0, (this.#xHeight/2)*2, 0 ) );
+		const cursorGeometry = new THREE.BufferGeometry().setFromPoints( points );
+		const cursorLine = new THREE.Line( cursorGeometry, cursorMaterial );
+		this.add(cursorLine);
 		this.#localPlane = new THREE.Plane( new THREE.Vector3( 1, 0, 0 ), 0);
 		if ( this.threeFont!==undefined ) {
 			this.#generateTextMesh();
@@ -126,6 +141,20 @@ class EditBox extends THREE.Object3D {
 		let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.isPlaceholder ? this.#placeholderColor : this.#textColor, clippingPlanes: [ this.#localPlane ] }) ); // TODO tipColor
 		// clipping plane constant not updated on position set, update it before Mesh render
 		textMesh.onBeforeRender = function (renderer, scene, camera, geometry, material, group) {
+			if (this.parent.#active) {
+				if (Date.now() - this.parent.#activeTime < 750) {
+					this.parent.children[1].visible = true;
+				} else {
+					this.parent.children[1].visible = ((Date.now() - this.parent.#activeTime) % 1500) < 750;
+				}
+			} else {
+				this.parent.children[1].visible = false;
+			}
+			if (this.parent.children[2].geometry.boundingBox.max.x === -Infinity) {
+				this.parent.children[1].position.x = this.parent.children[2].position.x;
+			} else {
+				this.parent.children[1].position.x = this.parent.children[2].position.x + this.parent.children[2].geometry.boundingBox.max.x + this.parent.#xHeight/2;
+			}
 			material.clippingPlanes[0].constant = -this.parent.position.x + Math.abs(this.parent.children[0].geometry.boundingBox.max.x - this.parent.children[0].geometry.boundingBox.min.x)*.4;
 		};
 		if (textGeometryWidth<=boundingBoxWidth*.8) {
@@ -138,8 +167,8 @@ class EditBox extends THREE.Object3D {
 	}
 	#reDraw() {
 		if ( this.threeFont!==undefined ) {
-			this.children[1].geometry.dispose();
-			this.remove(this.children[1]);
+			this.children[2].geometry.dispose();
+			this.remove(this.children[2]);
 			this.#generateTextMesh();
 		}
 	}
