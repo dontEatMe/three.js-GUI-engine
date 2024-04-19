@@ -8,7 +8,7 @@ import fontJson from './fonts/Arial_Regular.typeface.json';
 fontJson.glyphs[' '].x_max = fontJson.glyphs['x'].x_max;
 fontJson.glyphs[' '].x_min = fontJson.glyphs['x'].x_min;
 fontJson.glyphs[' '].ha = fontJson.glyphs['x'].ha;
-fontJson.glyphs[' '].o = 'm 0 0 l 0 0 z';
+fontJson.glyphs[' '].o = 'm '+fontJson.glyphs[' '].x_min+' 0 l '+fontJson.glyphs[' '].x_max+' 0 z ';
 
 const fontLoader = new FontLoader();
 const font = fontLoader.parse( fontJson );
