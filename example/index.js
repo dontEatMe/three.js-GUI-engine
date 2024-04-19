@@ -1,12 +1,17 @@
 import * as THREE from 'three';
 import { FontLoader } from 'three/addons/loaders/FontLoader';
 import * as GUI from 'three.js-gui-engine';
-import fontJson from './fonts/helvetiker_regular.typeface.json';
+import fontJson from './fonts/Arial_Regular.typeface.json';
 
 // init
+// hack for space symbol at start/end of string
+fontJson.glyphs[' '].x_max = fontJson.glyphs['x'].x_max;
+fontJson.glyphs[' '].x_min = fontJson.glyphs['x'].x_min;
+fontJson.glyphs[' '].ha = fontJson.glyphs['x'].ha;
+fontJson.glyphs[' '].o = 'm 0 0 l 0 0 z';
+
 const fontLoader = new FontLoader();
 const font = fontLoader.parse( fontJson );
-
 const texLoader = new THREE.TextureLoader();
 
 const container = document.getElementById( 'example' );
@@ -108,7 +113,7 @@ interfaceScene.add(editbox1);
 const editbox2 = new GUI.EditBox({ password: true, placeholder: 'pass', text: 'asf', geometry: new THREE.CircleGeometry(80,32), xHeight: 10, threeFont: font} );
 editbox2.position.set( -150, -50, 0 );
 interfaceScene.add(editbox2);
-	
+
 const scrollbar1 = new GUI.ScrollBar({geometry: new THREE.CircleGeometry(15,32)});
 scrollbar1.position.set( -300, 0, 0 );
 interfaceScene.add(scrollbar1);
@@ -118,7 +123,7 @@ upscrl.center();
 const downscrl = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-20, 0, 0), new THREE.Vector3(20, 0, 0), new THREE.Vector3(0, 20, 0)]);
 downscrl.center();
 const scrollbar2 = new GUI.ScrollBar({ upGeometry: upscrl,  downGeometry: downscrl });
-scrollbar2.above=4;
+scrollbar2.above = 4;
 scrollbar2.position.set(-250,0,0);
 interfaceScene.add(scrollbar2);
 scrollbar2.onscrollup   = function() { button1.position.y+=20; }
