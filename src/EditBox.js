@@ -10,6 +10,7 @@ class EditBox extends THREE.Object3D {
 	#active;
 	#activeTime;
 	#localPlane;
+	#textPointer;
 
 	get active () {
 		return this.#active;
@@ -68,6 +69,7 @@ class EditBox extends THREE.Object3D {
 		this.threeFont = parameters.threeFont!==undefined ? parameters.threeFont : undefined;
 		this.#active = false;
 		this.#activeTime = 0;
+		this.#textPointer = 0;
 		this.limit = parameters.limit !== undefined ? parameters.limit : 50;
 		this.#placeholder = parameters.placeholder !== undefined ? parameters.placeholder : ''; // TODO getter/setter
 		this.#placeholderColor = parameters.placeholderColor !== undefined ? parameters.placeholderColor : 0x444444;
@@ -92,7 +94,6 @@ class EditBox extends THREE.Object3D {
 		this.textSize = 100*textScale;
 		let geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(100,25);
 		geometry.computeBoundingBox();
-		let boundingBoxWidth = Math.abs(geometry.boundingBox.max.x - geometry.boundingBox.min.x);
 		let material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0xcccccc });
 		this.bgColor = material.color.getHex(); // TODO getter/setter
 		let base = new THREE.Mesh(geometry, material);
@@ -156,12 +157,12 @@ class EditBox extends THREE.Object3D {
 			} else {
 				this.parent.children[1].position.x = this.parent.children[2].position.x + this.parent.children[2].geometry.boundingBox.max.x + this.parent.#xHeight/2;
 			}
-			material.clippingPlanes[0].constant = -this.parent.position.x + Math.abs(this.parent.children[0].geometry.boundingBox.max.x - this.parent.children[0].geometry.boundingBox.min.x)*.4;
+			material.clippingPlanes[0].constant = -this.parent.position.x + Math.abs(this.parent.children[0].geometry.boundingBox.max.x - this.parent.children[0].geometry.boundingBox.min.x)/2 - this.parent.#xHeight;
 		};
-		if (textGeometryWidth<=boundingBoxWidth*.8) {
-			textMesh.position.x = this.children[0].geometry.boundingBox.min.x + boundingBoxWidth*.1;
+		if (textGeometryWidth<=boundingBoxWidth - this.#xHeight*2) {
+			textMesh.position.x = this.children[0].geometry.boundingBox.min.x + this.#xHeight;
 		} else {
-			textMesh.position.x = -textGeometryWidth/2 + this.children[0].geometry.boundingBox.max.x - textGeometryWidth/2 - boundingBoxWidth*.1;
+			textMesh.position.x = this.children[0].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
 		}
 		textMesh.position.y = -this.#xHeight/2;
 		this.add(textMesh);
