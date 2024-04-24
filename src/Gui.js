@@ -9,7 +9,7 @@ import RadioButton from './RadioButton.js';
 import Label from './Label.js';
 import ScrollBar from './ScrollBar.js';
 
-const VERSION = '0.4.4';
+const VERSION = '0.4.5';
 
 const raycaster = new THREE.Raycaster();
 
@@ -18,7 +18,7 @@ function stopEvent (event) {
 	(event.preventDefault) ? event.preventDefault() : event.returnValue = false;
 }
 
-function checkParentsVisibility(object) {
+function checkParentsVisibility ( object ) {
 	let isVisible = object.visible;
 	if (isVisible === true) {
 		if (object.parent !== null) {
@@ -28,7 +28,7 @@ function checkParentsVisibility(object) {
 	return isVisible;
 }
 
-function doForChildren(children, callback) {
+function doForChildren ( children, callback ) {
 	children.forEach((guiChild) => {
 		if (guiChild.isGroup === true) {
 			doForChildren(guiChild.children, callback);
@@ -39,12 +39,12 @@ function doForChildren(children, callback) {
 }
 
 function KeyDown ( event, scene ) {
-	scene.children.forEach((child) => {
-		if (child instanceof EditBox) {
-			if (child.active) {
-				if (event.keyCode==8) {
+	doForChildren(scene.children, (guiChild)=>{
+		if (guiChild instanceof EditBox) {
+			if (guiChild.active) {
+				if (event.keyCode == 8) {
 					stopEvent(event);
-					child.text=child.text.slice(0,-1);
+					guiChild.text=guiChild.text.slice(0,-1);
 				}
 			}
 		}
@@ -52,13 +52,13 @@ function KeyDown ( event, scene ) {
 }
 
 function KeyPress ( event, scene ) {
-	scene.children.forEach((child) => {
-		if (child instanceof EditBox) {
-			if (child.active) {
-				if (event.keyCode!=13) {
-					if (child.text.length+1<=child.limit) {
+	doForChildren(scene.children, (guiChild)=>{
+		if (guiChild instanceof EditBox) {
+			if (guiChild.active) {
+				if (event.keyCode != 13) {
+					if (guiChild.text.length+1<=guiChild.limit) {
 						const newletter = String.fromCharCode(event.keyCode||event.charCode);
-						child.text=child.text+newletter;
+						guiChild.text=guiChild.text+newletter;
 					}
 				}
 			}
