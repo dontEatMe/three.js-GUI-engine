@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
+const EDITBOX_BASE   = 0;
+const EDITBOX_TEXT   = 1;
+const EDITBOX_CURSOR = 2;
+
 class EditBox extends THREE.Object3D {
 	#text;
 	#textColor;
@@ -38,8 +42,8 @@ class EditBox extends THREE.Object3D {
 	}
 	set textColor (color) {
 		this.#textColor = color;
-		this.children[1].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
-		this.children[2].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
+		this.children[EDITBOX_TEXT].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
+		this.children[EDITBOX_CURSOR].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
 	}
 	get isPlaceholder () {
 		return ((this.#active === false) && (this.#text === ''));
@@ -56,8 +60,8 @@ class EditBox extends THREE.Object3D {
 	}
 	set placeholderColor (color) {
 		this.#placeholderColor = color;
-		this.children[1].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
-		this.children[2].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
+		this.children[EDITBOX_TEXT].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
+		this.children[EDITBOX_CURSOR].material.color.setHex(this.isPlaceholder ? this.#placeholderColor : this.#textColor);
 	}
 	constructor( parameters ) {
 		super();
@@ -114,7 +118,7 @@ class EditBox extends THREE.Object3D {
 		}
 	}
 	changeColor( color ) {
-		this.children[0].material.color.setHex(color);
+		this.children[EDITBOX_BASE].material.color.setHex(color);
 	}
 	#generateTextMesh() {
 		let itemText = ''; // TODO getter/setter
@@ -139,38 +143,38 @@ class EditBox extends THREE.Object3D {
 		});
 		textGeometry.computeBoundingBox();
 		let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
-		let boundingBoxWidth = Math.abs(this.children[0].geometry.boundingBox.max.x - this.children[0].geometry.boundingBox.min.x);
+		let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
 		let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.isPlaceholder ? this.#placeholderColor : this.#textColor, clippingPlanes: [ this.#localPlane ] }) ); // TODO tipColor
 		// clipping plane constant not updated on position set, update it before Mesh render
 		textMesh.onBeforeRender = function (renderer, scene, camera, geometry, material, group) {
 			if (this.parent.#active) {
 				if (Date.now() - this.parent.#activeTime < 750) {
-					this.parent.children[1].visible = true;
+					this.parent.children[EDITBOX_TEXT].visible = true;
 				} else {
-					this.parent.children[1].visible = ((Date.now() - this.parent.#activeTime) % 1500) < 750;
+					this.parent.children[EDITBOX_TEXT].visible = ((Date.now() - this.parent.#activeTime) % 1500) < 750;
 				}
 			} else {
-				this.parent.children[1].visible = false;
+				this.parent.children[EDITBOX_TEXT].visible = false;
 			}
-			if (this.parent.children[2].geometry.boundingBox.max.x === -Infinity) {
-				this.parent.children[1].position.x = this.parent.children[2].position.x;
+			if (this.parent.children[EDITBOX_CURSOR].geometry.boundingBox.max.x === -Infinity) {
+				this.parent.children[EDITBOX_TEXT].position.x = this.parent.children[EDITBOX_CURSOR].position.x;
 			} else {
-				this.parent.children[1].position.x = this.parent.children[2].position.x + this.parent.children[2].geometry.boundingBox.max.x + this.parent.#xHeight/2;
+				this.parent.children[EDITBOX_TEXT].position.x = this.parent.children[EDITBOX_CURSOR].position.x + this.parent.children[EDITBOX_CURSOR].geometry.boundingBox.max.x + this.parent.#xHeight/2;
 			}
-			material.clippingPlanes[0].constant = -this.parent.position.x + Math.abs(this.parent.children[0].geometry.boundingBox.max.x - this.parent.children[0].geometry.boundingBox.min.x)/2 - this.parent.#xHeight;
+			material.clippingPlanes[0].constant = -this.parent.position.x + Math.abs(this.parent.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.parent.children[EDITBOX_BASE].geometry.boundingBox.min.x)/2 - this.parent.#xHeight;
 		};
 		if (textGeometryWidth<=boundingBoxWidth - this.#xHeight*2) {
-			textMesh.position.x = this.children[0].geometry.boundingBox.min.x + this.#xHeight;
+			textMesh.position.x = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
 		} else {
-			textMesh.position.x = this.children[0].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
+			textMesh.position.x = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
 		}
 		textMesh.position.y = -this.#xHeight/2;
 		this.add(textMesh);
 	}
 	#reDraw() {
 		if ( this.threeFont!==undefined ) {
-			this.children[2].geometry.dispose();
-			this.remove(this.children[2]);
+			this.children[EDITBOX_CURSOR].geometry.dispose();
+			this.remove(this.children[EDITBOX_CURSOR]);
 			this.#generateTextMesh();
 		}
 	}

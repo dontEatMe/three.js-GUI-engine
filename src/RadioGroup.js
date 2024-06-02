@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+const RADIOGROUP_SELECT = 0;
+
 const _addedEvent = { type: 'added' };
 const _removedEvent = { type: 'removed' };
 
@@ -11,8 +13,8 @@ class RadioGroup extends THREE.Group {
 	}
 	set selectedRadioButton( object ) {
 		this.#selectedRadioButton = object;
-		this.children[0].position.x = object.position.x;
-		this.children[0].position.y = object.position.y;
+		this.children[RADIOGROUP_SELECT].position.x = object.position.x;
+		this.children[RADIOGROUP_SELECT].position.y = object.position.y;
 	}
 	constructor( parameters ) {
 		super();
@@ -50,7 +52,7 @@ class RadioGroup extends THREE.Group {
 		return this;
 	}
 	changeColor( color ) {
-		this.children[0].material.color.setHex(color);
+		this.children[RADIOGROUP_SELECT].material.color.setHex(color);
 	}
 	onmouseup ( object ) {  }
 	onmousedown ( object ) {  }

@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
+const RADIOBUTTON_BASE          = 0;
+const RADIOBUTTON_TEXT_UNDERLAY = 1;
+const RADIOBUTTON_TEXT          = 2;
+
 class RadioButton extends THREE.Object3D {
 	#text;
 	#textColor;
@@ -18,7 +22,7 @@ class RadioButton extends THREE.Object3D {
 	}
 	set textColor (color) {
 		this.#textColor = color;
-		this.children[2].material.color.setHex(this.#textColor);
+		this.children[RADIOBUTTON_TEXT].material.color.setHex(this.#textColor);
 	}
 	constructor( parameters ) {
 		super();
@@ -56,7 +60,7 @@ class RadioButton extends THREE.Object3D {
 		}
 	}
 	changeColor( color ) {
-		this.children[0].material.color.setHex(color);
+		this.children[RADIOBUTTON_BASE].material.color.setHex(color);
 	}
 	#generateTextMesh() {
 		// regenerate TextGeometry with right scale
@@ -75,7 +79,7 @@ class RadioButton extends THREE.Object3D {
 		let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
 		let textGeometryHeight = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
 		let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
-		let checkerWidth = Math.abs(this.children[0].geometry.boundingBox.max.x - this.children[0].geometry.boundingBox.min.x);
+		let checkerWidth = Math.abs(this.children[RADIOBUTTON_BASE].geometry.boundingBox.max.x - this.children[RADIOBUTTON_BASE].geometry.boundingBox.min.x);
 		textMesh.position.x = checkerWidth/2 + checkerWidth/5;
 		textMesh.position.y = -this.#xHeight/2;
 		this.add(textMesh);
@@ -87,10 +91,10 @@ class RadioButton extends THREE.Object3D {
 	}
 	#reDraw() {
 		if ( this.threeFont!==undefined ) {
-			this.children[2].geometry.dispose();
-			this.remove(this.children[2]);
-			this.children[1].geometry.dispose();
-			this.remove(this.children[1]);
+			this.children[RADIOBUTTON_TEXT_UNDERLAY].geometry.dispose();
+			this.remove(this.children[RADIOBUTTON_TEXT_UNDERLAY]);
+			this.children[RADIOBUTTON_TEXT].geometry.dispose();
+			this.remove(this.children[RADIOBUTTON_TEXT]);
 			this.#generateTextMesh();
 		}
 	}

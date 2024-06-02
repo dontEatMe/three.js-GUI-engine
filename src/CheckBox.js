@@ -1,6 +1,11 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
+const CHECKBOX_BASE          = 0;
+const CHECKBOX_SELECT        = 1;
+const CHECKBOX_TEXT          = 2;
+const CHECKBOX_TEXT_UNDERLAY = 3;
+
 class CheckBox extends THREE.Object3D {
 	#text;
 	#textColor;
@@ -18,7 +23,7 @@ class CheckBox extends THREE.Object3D {
 	}
 	set textColor (color) {
 		this.#textColor = color;
-		this.children[2].material.color.setHex(this.#textColor);
+		this.children[CHECKBOX_TEXT].material.color.setHex(this.#textColor);
 	}
 	constructor( parameters ) {
 		super();
@@ -62,13 +67,13 @@ class CheckBox extends THREE.Object3D {
 		}
 	}
 	set() {
-		this.children[1].visible = true;
+		this.children[CHECKBOX_SELECT].visible = true;
 	}
 	unset() {
-		this.children[1].visible = false;
+		this.children[CHECKBOX_SELECT].visible = false;
 	}
 	changeColor( color ) {
-		this.children[0].material.color.setHex(color);
+		this.children[CHECKBOX_BASE].material.color.setHex(color);
 	}
 	#generateTextMesh() {
 		// regenerate TextGeometry with right scale
@@ -87,7 +92,7 @@ class CheckBox extends THREE.Object3D {
 		let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
 		let textGeometryHeight = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
 		let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
-		let checkerWidth = Math.abs(this.children[0].geometry.boundingBox.max.x - this.children[0].geometry.boundingBox.min.x);
+		let checkerWidth = Math.abs(this.children[CHECKBOX_BASE].geometry.boundingBox.max.x - this.children[CHECKBOX_BASE].geometry.boundingBox.min.x);
 		textMesh.position.x = checkerWidth/2 + checkerWidth/5;
 		textMesh.position.y = -this.#xHeight/2;
 		this.add(textMesh);
@@ -99,15 +104,15 @@ class CheckBox extends THREE.Object3D {
 	}
 	#reDraw() {
 		if ( this.threeFont!==undefined ) {
-			this.children[3].geometry.dispose();
-			this.remove(this.children[3]);
-			this.children[2].geometry.dispose();
-			this.remove(this.children[2]);
+			this.children[CHECKBOX_TEXT_UNDERLAY].geometry.dispose();
+			this.remove(this.children[CHECKBOX_TEXT_UNDERLAY]);
+			this.children[CHECKBOX_TEXT].geometry.dispose();
+			this.remove(this.children[CHECKBOX_TEXT]);
 			this.#generateTextMesh();
 		}
 	}
 	onmouseup ( object ) {
-		if (this.children[1].visible) this.unset();
+		if (this.children[CHECKBOX_SELECT].visible) this.unset();
 		else this.set();
 	}
 	onmousedown ( object ) {  }
@@ -115,7 +120,7 @@ class CheckBox extends THREE.Object3D {
 		this.changeColor( 0x888888 );
 	}
 	onmouseout ( object ) {
-		this.changeColor(0x666666);
+		this.changeColor( 0x666666 );
 	}
 }
 

@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
+const BUTTON_BASE = 0;
+const BUTTON_TEXT = 1;
+
 class Button extends THREE.Object3D {
 	#text;
 	#textColor;
@@ -18,7 +21,7 @@ class Button extends THREE.Object3D {
 	}
 	set textColor (color) {
 		this.#textColor = color;
-		this.children[1].material.color.setHex(this.#textColor);
+		this.children[BUTTON_TEXT].material.color.setHex(this.#textColor);
 	}
 	constructor( parameters ) {
 		super();
@@ -55,7 +58,7 @@ class Button extends THREE.Object3D {
 		}
 	}
 	changeColor( color ) {
-		this.children[0].material.color.setHex(color);
+		this.children[BUTTON_BASE].material.color.setHex(color);
 	}
 	#generateTextMesh() {
 		// regenerate TextGeometry with right scale
@@ -79,8 +82,8 @@ class Button extends THREE.Object3D {
 	}
 	#reDraw() {
 		if ( this.threeFont!==undefined ) {
-			this.children[1].geometry.dispose();
-			this.remove(this.children[1]);
+			this.children[BUTTON_TEXT].geometry.dispose();
+			this.remove(this.children[BUTTON_TEXT]);
 			this.#generateTextMesh();
 		}
 	}

@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+const PANEL_BASE = 0;
+
 class Panel extends THREE.Object3D {
 	constructor( parameters ) {
 		super();
@@ -11,7 +13,7 @@ class Panel extends THREE.Object3D {
 		this.add(base);
 	}
 	changeColor( color ) {
-		this.children[0].material.color.setHex(color);
+		this.children[PANEL_BASE].material.color.setHex(color);
 	}
 	onmouseup ( object ) {  }
 	onmousedown ( object ) {  }

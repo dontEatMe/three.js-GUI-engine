@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+const ICON_BASE = 0;
+
 class Icon extends THREE.Object3D {
 	constructor( parameters ) {
 		super();

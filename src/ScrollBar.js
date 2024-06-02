@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 
+const SCROLLBAR_SLIDER = 0;
+const SCROLLBAR_UP     = 1;
+const SCROLLBAR_DOWN   = 2;
+
 class ScrollBar extends THREE.Object3D {
 	#above;
 	#below;
@@ -19,11 +23,11 @@ class ScrollBar extends THREE.Object3D {
 		this.#calcBasePos();
 	}
 	#calcBasePos(){
-		let upLength = Math.abs(this.children[1].geometry.boundingBox.max.y - this.children[1].geometry.boundingBox.min.y);
-		let downLength = Math.abs(this.children[2].geometry.boundingBox.max.y - this.children[2].geometry.boundingBox.min.y);
-		let sliderLength = Math.abs(this.children[0].geometry.boundingBox.max.y - this.children[0].geometry.boundingBox.min.y);
-		let dist = this.children[2].position.y-this.children[1].position.y-upLength*1.2/2-downLength*1.2/2-sliderLength;
-		this.children[0].position.y = this.children[2].position.y-downLength*1.2/2-sliderLength/2-dist*(this.#below/(this.#above+this.#below)); // base
+		let upLength = Math.abs(this.children[SCROLLBAR_UP].geometry.boundingBox.max.y - this.children[SCROLLBAR_UP].geometry.boundingBox.min.y);
+		let downLength = Math.abs(this.children[SCROLLBAR_DOWN].geometry.boundingBox.max.y - this.children[SCROLLBAR_DOWN].geometry.boundingBox.min.y);
+		let sliderLength = Math.abs(this.children[SCROLLBAR_SLIDER].geometry.boundingBox.max.y - this.children[SCROLLBAR_SLIDER].geometry.boundingBox.min.y);
+		let dist = this.children[SCROLLBAR_DOWN].position.y-this.children[SCROLLBAR_UP].position.y-upLength*1.2/2-downLength*1.2/2-sliderLength;
+		this.children[SCROLLBAR_SLIDER].position.y = this.children[SCROLLBAR_DOWN].position.y-downLength*1.2/2-sliderLength/2-dist*(this.#below/(this.#above+this.#below)); // base
 	}
 	constructor( parameters ) {
 		super();
@@ -49,18 +53,18 @@ class ScrollBar extends THREE.Object3D {
 		this.#calcBasePos();
 	}
 	changeColor( color ) {
-		this.children[0].material.color.setHex(color);
-		this.children[1].material.color.setHex(color);
-		this.children[2].material.color.setHex(color);
+		this.children[SCROLLBAR_SLIDER].material.color.setHex(color);
+		this.children[SCROLLBAR_UP].material.color.setHex(color);
+		this.children[SCROLLBAR_DOWN].material.color.setHex(color);
 	}
 	onmouseup ( object ) {  }
 	onmousedown ( object ) {
-		if ((object == this.children[1])&&(this.above>0)) {
+		if ((object == this.children[SCROLLBAR_UP])&&(this.above>0)) {
 			this.onscrollup();
 			this.below++;
 			this.above--;
 		}
-		if ((object == this.children[2])&&(this.below>0)) {
+		if ((object == this.children[SCROLLBAR_DOWN])&&(this.below>0)) {
 			this.onscrolldown();
 			this.above++;
 			this.below--;

@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
+const LABEL_TEXT          = 0;
+const LABEL_TEXT_UNDERLAY = 1;
+
 class Label extends THREE.Object3D {
 	#text;
 	#textColor;
@@ -76,10 +79,10 @@ class Label extends THREE.Object3D {
 	}
 	#reDraw() {
 		if ( this.threeFont!==undefined ) {
-			this.children[1].geometry.dispose();
-			this.remove(this.children[1]);
-			this.children[0].geometry.dispose();
-			this.remove(this.children[0]);
+			this.children[LABEL_TEXT_UNDERLAY].geometry.dispose();
+			this.remove(this.children[LABEL_TEXT_UNDERLAY]);
+			this.children[LABEL_TEXT].geometry.dispose();
+			this.remove(this.children[LABEL_TEXT]);
 			this.#generateTextMesh();
 		}
 	}
