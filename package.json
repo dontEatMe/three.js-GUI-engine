@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/dontEatMe/three.js-GUI-engine#readme",
   "dependencies": {
-    "three": "^0.167.1"
+    "three": "^0.168.0"
   }
 }
