@@ -163,7 +163,7 @@ function animation( time ) {
 	mesh.rotation.x = time / 2000;
 	mesh.rotation.y = time / 1000;
 	
-	if (Math.round(time).toString() != label1.text) {
+	if (Math.round(time).toString() !== label1.text) {
 		label1.text = Math.round(time).toString();
 	}
 	
