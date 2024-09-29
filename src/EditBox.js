@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
-const EDITBOX_BASE   = 0;
-const EDITBOX_TEXT   = 1;
-const EDITBOX_CURSOR = 2;
+const EDITBOX_BASE       = 0;
+const EDITBOX_CURSOR     = 1;
+const EDITBOX_SELECTAREA = 2;
+const EDITBOX_TEXT       = 3;
 
 class EditBox extends THREE.Object3D {
 	#text;
@@ -13,8 +14,9 @@ class EditBox extends THREE.Object3D {
 	#placeholderColor;
 	#active;
 	#activeTime;
-	#localPlane;
+	#localPlane = new THREE.Plane( new THREE.Vector3( 1, 0, 0 ), 0);
 	#textPointer;
+	#startSelectTextPointer;
 
 	get active () {
 		return this.#active;
@@ -27,7 +29,7 @@ class EditBox extends THREE.Object3D {
 			this.changeColor( 0xaaaaaa );
 		}
 		this.#active = act;
-		this.#reDraw();
+		this.#generateTextMesh();
 	}
 	get text () {
 		return this.#text;
@@ -35,7 +37,7 @@ class EditBox extends THREE.Object3D {
 	set text (txt) {
 		this.#activeTime = Date.now();
 		this.#text = txt;
-		this.#reDraw();
+		this.#generateTextMesh();
 	}
 	get textColor () {
 		return this.#textColor;
@@ -53,7 +55,7 @@ class EditBox extends THREE.Object3D {
 	}
 	set placeholder (txt) {
 		this.#placeholder = txt;
-		this.#reDraw();
+		this.#generateTextMesh();
 	}
 	get placeholderColor () {
 		return this.#placeholderColor;
@@ -80,7 +82,7 @@ class EditBox extends THREE.Object3D {
 		this.password = parameters.password !== undefined ? parameters.password : false;
 		// create TextGeometry with default 100 size for get bounding box
 		// use 'x' as symbol for x-height distance calculation
-		let textGeometry = new TextGeometry('x', {
+		const textGeometry = new TextGeometry('x', {
 			font: this.threeFont,
 			size: 100,
 			depth: 0,
@@ -96,93 +98,102 @@ class EditBox extends THREE.Object3D {
 		let textScale = this.#xHeight/xHeight;
 		textGeometry.dispose();
 		this.textSize = 100*textScale;
-		let geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(100,25);
+		const geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(100,25);
 		geometry.computeBoundingBox();
-		let material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0xcccccc });
+		const material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0xcccccc });
 		this.bgColor = material.color.getHex(); // TODO getter/setter
-		let base = new THREE.Mesh(geometry, material);
+		const base = new THREE.Mesh(geometry, material);
 		this.add(base);
 		const cursorMaterial = new THREE.LineBasicMaterial({
 			color: this.#textColor
 		});
 		const points = [];
-		points.push( new THREE.Vector3( 0, -(this.#xHeight/2)*2 , 0 ) );
-		points.push( new THREE.Vector3( 0, (this.#xHeight/2)*2, 0 ) );
+		points.push( new THREE.Vector3( 0, -this.#xHeight , 0 ) );
+		points.push( new THREE.Vector3( 0, this.#xHeight, 0 ) );
 		const cursorGeometry = new THREE.BufferGeometry().setFromPoints( points );
 		const cursorLine = new THREE.Line( cursorGeometry, cursorMaterial );
 		cursorLine.visible = false;
 		this.add(cursorLine);
-		this.#localPlane = new THREE.Plane( new THREE.Vector3( 1, 0, 0 ), 0);
-		if ( this.threeFont!==undefined ) {
-			this.#generateTextMesh();
-		}
+		const selectAreaGeometry = new THREE.PlaneGeometry(0, 0);
+		const selectArea = new THREE.Mesh(selectAreaGeometry, new THREE.MeshBasicMaterial( { color: 0x808080, clippingPlanes: [ new THREE.Plane( new THREE.Vector3( -1, 0, 0 ), 0), this.#localPlane ] } ));
+		selectArea.visible = false;
+		selectArea.position.z = 1;
+		this.add(selectArea);
+		const textMesh = new THREE.Mesh(textGeometry, new THREE.MeshBasicMaterial({ color: this.isPlaceholder ? this.#placeholderColor : this.#textColor, clippingPlanes: [ this.#localPlane ] }));
+		textMesh.position.z = 2;
+		this.add(textMesh); // TODO tipColor
+		this.#generateTextMesh();
 	}
 	changeColor( color ) {
 		this.children[EDITBOX_BASE].material.color.setHex(color);
 	}
 	#generateTextMesh() {
-		let itemText = ''; // TODO getter/setter
-		if (this.password === true) {
-			for (let i=0; i<this.text.length; i++) {
-				itemText+='*';
-			}
-		} else {
-			itemText = this.#text;
-		}
-		// regenerate TextGeometry with right scale
-		let textGeometry = new TextGeometry(this.isPlaceholder ? this.#placeholder : itemText, {
-			font: this.threeFont,
-			size: this.textSize,
-			depth: 0,
-			curveSegments: 4,
-			bevelEnabled: false,
-			bevelThickness: 0,
-			bevelSize: 0,
-			bevelOffset: 0,
-			bevelSegments: 0
-		});
-		textGeometry.computeBoundingBox();
-		let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
-		let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
-		let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.isPlaceholder ? this.#placeholderColor : this.#textColor, clippingPlanes: [ this.#localPlane ] }) ); // TODO tipColor
-		// clipping plane constant not updated on position set, update it before Mesh render
-		textMesh.onBeforeRender = function (renderer, scene, camera, geometry, material, group) {
-			if (this.parent.#active) {
-				if (Date.now() - this.parent.#activeTime < 750) {
-					this.parent.children[EDITBOX_TEXT].visible = true;
-				} else {
-					this.parent.children[EDITBOX_TEXT].visible = ((Date.now() - this.parent.#activeTime) % 1500) < 750;
+		if ( this.threeFont!==undefined ) {
+			let itemText = ''; // TODO getter/setter
+			if (this.password === true) {
+				for (let i=0; i<this.text.length; i++) {
+					itemText+='*';
 				}
 			} else {
-				this.parent.children[EDITBOX_TEXT].visible = false;
+				itemText = this.#text;
 			}
-			if (this.parent.children[EDITBOX_CURSOR].geometry.boundingBox.max.x === -Infinity) {
-				this.parent.children[EDITBOX_TEXT].position.x = this.parent.children[EDITBOX_CURSOR].position.x;
+			
+			this.children[EDITBOX_TEXT].geometry.dispose();
+			// regenerate TextGeometry with right scale
+			const textGeometry = new TextGeometry(this.isPlaceholder ? this.#placeholder : itemText, {
+				font: this.threeFont,
+				size: this.textSize,
+				depth: 0,
+				curveSegments: 4,
+				bevelEnabled: false,
+				bevelThickness: 0,
+				bevelSize: 0,
+				bevelOffset: 0,
+				bevelSegments: 0
+			});
+			textGeometry.computeBoundingBox();
+			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+			this.children[EDITBOX_SELECTAREA].geometry.dispose();
+			this.children[EDITBOX_SELECTAREA].geometry = new THREE.PlaneGeometry(textGeometryWidth+this.#xHeight, this.#xHeight*2);
+			
+			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
+			this.children[EDITBOX_TEXT].geometry = textGeometry;
+			// clipping plane constant not updated on position set, update it before Mesh render
+			this.children[EDITBOX_TEXT].onBeforeRender = function (renderer, scene, camera, geometry, material, group) {
+				if (this.parent.#active) {
+					if (Date.now() - this.parent.#activeTime < 750) {
+						this.parent.children[EDITBOX_CURSOR].visible = true;
+					} else {
+						this.parent.children[EDITBOX_CURSOR].visible = ((Date.now() - this.parent.#activeTime) % 1500) < 750;
+					}
+					this.parent.children[EDITBOX_SELECTAREA].visible = true;
+				} else {
+					this.parent.children[EDITBOX_CURSOR].visible = false;
+					this.parent.children[EDITBOX_SELECTAREA].visible = false;
+				}
+				if (this.parent.children[EDITBOX_TEXT].geometry.boundingBox.max.x === -Infinity) {
+					this.parent.children[EDITBOX_CURSOR].position.x = this.parent.children[EDITBOX_TEXT].position.x;
+				} else {
+					this.parent.children[EDITBOX_CURSOR].position.x = this.parent.children[EDITBOX_TEXT].position.x + this.parent.children[EDITBOX_TEXT].geometry.boundingBox.max.x;
+				}
+				this.parent.#localPlane.constant = -this.parent.position.x + Math.abs(this.parent.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.parent.children[EDITBOX_BASE].geometry.boundingBox.min.x)/2 - this.parent.#xHeight;
+				this.parent.children[EDITBOX_SELECTAREA].material.clippingPlanes[0].constant = this.parent.position.x + this.parent.children[EDITBOX_CURSOR].position.x;
+			};
+			if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
+				this.children[EDITBOX_TEXT].position.x = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
 			} else {
-				this.parent.children[EDITBOX_TEXT].position.x = this.parent.children[EDITBOX_CURSOR].position.x + this.parent.children[EDITBOX_CURSOR].geometry.boundingBox.max.x + this.parent.#xHeight/2;
+				this.children[EDITBOX_TEXT].position.x = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
 			}
-			material.clippingPlanes[0].constant = -this.parent.position.x + Math.abs(this.parent.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.parent.children[EDITBOX_BASE].geometry.boundingBox.min.x)/2 - this.parent.#xHeight;
-		};
-		if (textGeometryWidth<=boundingBoxWidth - this.#xHeight*2) {
-			textMesh.position.x = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
-		} else {
-			textMesh.position.x = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
-		}
-		textMesh.position.y = -this.#xHeight/2;
-		this.add(textMesh);
-	}
-	#reDraw() {
-		if ( this.threeFont!==undefined ) {
-			this.children[EDITBOX_CURSOR].geometry.dispose();
-			this.remove(this.children[EDITBOX_CURSOR]);
-			this.#generateTextMesh();
+			this.children[EDITBOX_TEXT].position.y = -this.#xHeight/2;
+			this.children[EDITBOX_SELECTAREA].position.set(this.children[EDITBOX_TEXT].position.x+textGeometryWidth/2,this.children[EDITBOX_TEXT].position.y+this.#xHeight/2,this.children[EDITBOX_SELECTAREA].position.z);
 		}
 	}
-	onmouseup ( object ) {  }
-	onmousedown ( object ) {
+	onmouseup ( intersect ) { }
+	onmousedown ( intersect ) {
+		console.log(intersect);
 		this.active = true;
 	}
-	onmouseover ( object ) {
+	onmouseover ( intersect ) {
 		this.changeColor( 0xaaaaaa );
 	}
 	onmouseout ( object ) {

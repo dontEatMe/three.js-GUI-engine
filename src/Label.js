@@ -33,7 +33,7 @@ class Label extends THREE.Object3D {
 		this.threeFont = parameters.threeFont!==undefined ? parameters.threeFont : undefined;
 		// create TextGeometry with default 100 size for get bounding box
 		// use 'x' as symbol for x-height distance calculation
-		let textGeometry = new TextGeometry('x', {
+		const textGeometry = new TextGeometry('x', {
 			font: this.threeFont,
 			size: 100,
 			depth: 0,
@@ -52,44 +52,44 @@ class Label extends THREE.Object3D {
 		this.#generateTextMesh();
 	}
 	#generateTextMesh() {
-		// regenerate TextGeometry with right scale
-		let textGeometry = new TextGeometry(this.#text, {
-			font: this.threeFont,
-			size: this.textSize,
-			depth: 0,
-			curveSegments: 4,
-			bevelEnabled: false,
-			bevelThickness: 0,
-			bevelSize: 0,
-			bevelOffset: 0,
-			bevelSegments: 0
-		});
-		textGeometry.computeBoundingBox();
-		let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
-		let textGeometryHeight = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
-		let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
-		textMesh.position.x = -textGeometryWidth/2;
-		textMesh.position.y = -this.#xHeight/2;
-		this.add(textMesh);
-		// for select from mouse move
-		let boundingPlaneGeometry = new THREE.PlaneGeometry(textGeometryWidth, textGeometryHeight);
-		let boundingPlaneMesh = new THREE.Mesh(boundingPlaneGeometry, new THREE.MeshBasicMaterial( { transparent: true, opacity: 0 } ));
-		boundingPlaneMesh.position.set(textMesh.position.x+textGeometryWidth/2,textMesh.position.y+textGeometryHeight/2,textMesh.position.z);
-		this.add(boundingPlaneMesh);
-	}
-	#reDraw() {
 		if ( this.threeFont!==undefined ) {
-			this.children[LABEL_TEXT_UNDERLAY].geometry.dispose();
-			this.remove(this.children[LABEL_TEXT_UNDERLAY]);
-			this.children[LABEL_TEXT].geometry.dispose();
-			this.remove(this.children[LABEL_TEXT]);
-			this.#generateTextMesh();
+			// regenerate TextGeometry with right scale
+			const textGeometry = new TextGeometry(this.#text, {
+				font: this.threeFont,
+				size: this.textSize,
+				depth: 0,
+				curveSegments: 4,
+				bevelEnabled: false,
+				bevelThickness: 0,
+				bevelSize: 0,
+				bevelOffset: 0,
+				bevelSegments: 0
+			});
+			textGeometry.computeBoundingBox();
+			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+			let textGeometryHeight = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
+			const textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
+			textMesh.position.x = -textGeometryWidth/2;
+			textMesh.position.y = -this.#xHeight/2;
+			this.add(textMesh);
+			// for select from mouse move
+			const boundingPlaneGeometry = new THREE.PlaneGeometry(textGeometryWidth, textGeometryHeight);
+			const boundingPlaneMesh = new THREE.Mesh(boundingPlaneGeometry, new THREE.MeshBasicMaterial( { transparent: true, opacity: 0 } ));
+			boundingPlaneMesh.position.set(textMesh.position.x+textGeometryWidth/2,textMesh.position.y+textGeometryHeight/2,textMesh.position.z);
+			this.add(boundingPlaneMesh);
 		}
 	}
-	onmouseup ( object ) {  }
-	onmousedown ( object ) {  }
-	onmouseover ( object ) {  }
-	onmouseout ( object ) {  }
+	#reDraw() {
+		this.children[LABEL_TEXT_UNDERLAY].geometry.dispose();
+		this.remove(this.children[LABEL_TEXT_UNDERLAY]);
+		this.children[LABEL_TEXT].geometry.dispose();
+		this.remove(this.children[LABEL_TEXT]);
+		this.#generateTextMesh();
+	}
+	onmouseup ( intersect ) { }
+	onmousedown ( intersect ) { }
+	onmouseover ( intersect ) { }
+	onmouseout ( object ) { }
 }
 
 export default Label;

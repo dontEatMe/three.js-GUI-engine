@@ -33,7 +33,7 @@ class Button extends THREE.Object3D {
 		this.threeFont = parameters.threeFont!==undefined ? parameters.threeFont : undefined;
 		// create TextGeometry with default 100 size for get bounding box
 		// use 'x' as symbol for x-height distance calculation
-		let textGeometry = new TextGeometry('x', {
+		const textGeometry = new TextGeometry('x', {
 			font: this.threeFont,
 			size: 100,
 			depth: 0,
@@ -49,47 +49,45 @@ class Button extends THREE.Object3D {
 		let textScale = this.#xHeight/xHeight;
 		textGeometry.dispose();
 		this.textSize = 100*textScale;
-		let geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(100,25);
-		let material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x666666 });
-		let base = new THREE.Mesh(geometry, material);
+		const geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(100,25);
+		const material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x666666 });
+		const base = new THREE.Mesh(geometry, material);
 		this.add(base);
-		if ( this.threeFont!==undefined ) {
-			this.#generateTextMesh();
-		}
+		this.#generateTextMesh();
 	}
 	changeColor( color ) {
 		this.children[BUTTON_BASE].material.color.setHex(color);
 	}
 	#generateTextMesh() {
-		// regenerate TextGeometry with right scale
-		let textGeometry = new TextGeometry(this.#text, {
-			font: this.threeFont,
-			size: this.textSize,
-			depth: 0,
-			curveSegments: 4,
-			bevelEnabled: false,
-			bevelThickness: 0,
-			bevelSize: 0,
-			bevelOffset: 0,
-			bevelSegments: 0
-		});
-		textGeometry.computeBoundingBox();
-		let textGeometryWidth = Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
-		let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
-		textMesh.position.x = -textGeometryWidth/2;
-		textMesh.position.y = -this.#xHeight/2;
-		this.add(textMesh);
-	}
-	#reDraw() {
 		if ( this.threeFont!==undefined ) {
-			this.children[BUTTON_TEXT].geometry.dispose();
-			this.remove(this.children[BUTTON_TEXT]);
-			this.#generateTextMesh();
+			// regenerate TextGeometry with right scale
+			const textGeometry = new TextGeometry(this.#text, {
+				font: this.threeFont,
+				size: this.textSize,
+				depth: 0,
+				curveSegments: 4,
+				bevelEnabled: false,
+				bevelThickness: 0,
+				bevelSize: 0,
+				bevelOffset: 0,
+				bevelSegments: 0
+			});
+			textGeometry.computeBoundingBox();
+			let textGeometryWidth = Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+			let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
+			textMesh.position.x = -textGeometryWidth/2;
+			textMesh.position.y = -this.#xHeight/2;
+			this.add(textMesh);
 		}
 	}
-	onmouseup ( object ) {  }
-	onmousedown ( object ) {  }
-	onmouseover ( object ) {
+	#reDraw() {
+		this.children[BUTTON_TEXT].geometry.dispose();
+		this.remove(this.children[BUTTON_TEXT]);
+		this.#generateTextMesh();
+	}
+	onmouseup ( intersect ) { }
+	onmousedown ( intersect ) { }
+	onmouseover ( intersect ) {
 		this.changeColor( 0x888888 );
 	}
 	onmouseout ( object ) {

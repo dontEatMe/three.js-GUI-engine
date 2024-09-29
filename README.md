@@ -17,7 +17,7 @@ GUI.EditBox - editbox
 GUI.ScrollBar - scrollbar  
 GUI.Icon - image  
 
-All elements have redefinable methods onmousedown(object), onmouseup(object), onmouseover(object), onmouseout(object), where object is subelement for which the event has been occurred.  
+All elements have redefinable methods onmousedown(intersect), onmouseup(intersect), onmouseover(intersect), onmouseout(object), where object is subelement for which the event has been occurred.  
 Element form specifies by geometry property.  
 
 example install:  

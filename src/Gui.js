@@ -9,7 +9,7 @@ import RadioButton from './RadioButton.js';
 import Label from './Label.js';
 import ScrollBar from './ScrollBar.js';
 
-const VERSION = '0.4.13';
+const VERSION = '0.5.0';
 
 const raycaster = new THREE.Raycaster();
 
@@ -82,7 +82,7 @@ function MouseMove ( canvas, mousepos, orthocamera, scene ) { // parameter - THR
 	intersects.some((intersect) => {
 		if (checkParentsVisibility(intersect.object) === true) {
 			if (intersect.object.parent.isGroup !== true) {
-				intersect.object.parent.onmouseover(intersect.object);
+				intersect.object.parent.onmouseover(intersect);
 				bufcursor = intersect.object.parent.cursor;
 				return true;
 			} else {
@@ -100,7 +100,7 @@ function MouseUp ( mousepos, orthocamera, scene ) { // parameter - THREE.Vector2
 	const intersects = raycaster.intersectObjects( scene.children, true );
 	intersects.some((intersect) => {
 		if (checkParentsVisibility(intersect.object) === true) {
-			intersect.object.parent.onmouseup(intersect.object);
+			intersect.object.parent.onmouseup(intersect);
 			return true;
 		} else {
 			return false;
@@ -118,7 +118,7 @@ function MouseDown ( mousepos, orthocamera, scene ) { // parameter - THREE.Vecto
 	});
 	intersects.some((intersect) => {
 		if (checkParentsVisibility(intersect.object) === true) {
-			intersect.object.parent.onmousedown(intersect.object);
+			intersect.object.parent.onmousedown(intersect);
 			return true;
 		} else {
 			return false;

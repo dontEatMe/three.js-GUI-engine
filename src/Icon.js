@@ -7,16 +7,16 @@ class Icon extends THREE.Object3D {
 		super();
 		parameters = parameters || {};
 		this.cursor = parameters.cursor !== undefined ? parameters.cursor : 'default';
-		let texture = parameters.texture !== undefined ? parameters.texture : new THREE.Texture( );
+		const texture = parameters.texture !== undefined ? parameters.texture : new THREE.Texture( );
 		texture.colorSpace = THREE.SRGBColorSpace;
-		let geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(texture.image.width,texture.image.height);
-		let base =  new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ map: texture, transparent: true}));
+		const geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(texture.image.width,texture.image.height);
+		const base =  new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ map: texture, transparent: true}));
 		this.add(base);
 	}
-	onmouseup ( object ) {  }
-	onmousedown ( object ) {  }
-	onmouseover ( object ) {  }
-	onmouseout ( object ) {  }
+	onmouseup ( intersect ) { }
+	onmousedown ( intersect ) { }
+	onmouseover ( intersect ) { }
+	onmouseout ( object ) { }
 }
 
 export default Icon;

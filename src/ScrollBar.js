@@ -5,8 +5,8 @@ const SCROLLBAR_UP     = 1;
 const SCROLLBAR_DOWN   = 2;
 
 class ScrollBar extends THREE.Object3D {
-	#above;
-	#below;
+	#above = 1; // hide above
+	#below = 1; // hide below
 
 	get above () {
 		return this.#above;
@@ -22,7 +22,7 @@ class ScrollBar extends THREE.Object3D {
 		this.#below = num;
 		this.#calcBasePos();
 	}
-	#calcBasePos(){
+	#calcBasePos() {
 		let upLength = Math.abs(this.children[SCROLLBAR_UP].geometry.boundingBox.max.y - this.children[SCROLLBAR_UP].geometry.boundingBox.min.y);
 		let downLength = Math.abs(this.children[SCROLLBAR_DOWN].geometry.boundingBox.max.y - this.children[SCROLLBAR_DOWN].geometry.boundingBox.min.y);
 		let sliderLength = Math.abs(this.children[SCROLLBAR_SLIDER].geometry.boundingBox.max.y - this.children[SCROLLBAR_SLIDER].geometry.boundingBox.min.y);
@@ -33,19 +33,17 @@ class ScrollBar extends THREE.Object3D {
 		super();
 		parameters = parameters || {};
 		this.cursor = parameters.cursor !== undefined ? parameters.cursor : 'pointer';
-		this.#above = 1; // hide above
-		this.#below = 1; // hide below
-		let geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(25,25);
+		const geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(25,25);
 		geometry.computeBoundingBox();
-		let material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x666666 });
-		let base =  new THREE.Mesh(geometry, material);
+		const material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x666666 });
+		const base =  new THREE.Mesh(geometry, material);
 		this.add(base);
-		let upGeometry = parameters.upGeometry !== undefined ? parameters.upGeometry : new THREE.PlaneGeometry(25,25);
+		const upGeometry = parameters.upGeometry !== undefined ? parameters.upGeometry : new THREE.PlaneGeometry(25,25);
 		upGeometry.computeBoundingBox();
-		let up =  new THREE.Mesh(upGeometry, material.clone());
-		let downGeometry = parameters.downGeometry !== undefined ? parameters.downGeometry : new THREE.PlaneGeometry(25,25);
+		const up =  new THREE.Mesh(upGeometry, material.clone());
+		const downGeometry = parameters.downGeometry !== undefined ? parameters.downGeometry : new THREE.PlaneGeometry(25,25);
 		downGeometry.computeBoundingBox();
-		let down =  new THREE.Mesh(downGeometry, material.clone());
+		const down =  new THREE.Mesh(downGeometry, material.clone());
 		up.position.y-=90;
 		down.position.y+=90;
 		this.add(up);
@@ -57,22 +55,22 @@ class ScrollBar extends THREE.Object3D {
 		this.children[SCROLLBAR_UP].material.color.setHex(color);
 		this.children[SCROLLBAR_DOWN].material.color.setHex(color);
 	}
-	onmouseup ( object ) {  }
-	onmousedown ( object ) {
-		if ((object == this.children[SCROLLBAR_UP])&&(this.above>0)) {
+	onmouseup ( intersect ) { }
+	onmousedown ( intersect ) {
+		if ((intersect.object == this.children[SCROLLBAR_UP])&&(this.above>0)) {
 			this.onscrollup();
 			this.below++;
 			this.above--;
 		}
-		if ((object == this.children[SCROLLBAR_DOWN])&&(this.below>0)) {
+		if ((intersect.object == this.children[SCROLLBAR_DOWN])&&(this.below>0)) {
 			this.onscrolldown();
 			this.above++;
 			this.below--;
 		}
 		this.#calcBasePos();
 	}
-	onmouseover ( object ) {
-		object.material.color.setHex(0x888888);
+	onmouseover ( intersect ) {
+		intersect.object.material.color.setHex(0x888888);
 	}
 	onmouseout ( object ) {
 		object.material.color.setHex(0x666666);
