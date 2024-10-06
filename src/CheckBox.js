@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { TextMesh }  from './Common.js';
 
 const CHECKBOX_BASE          = 0;
 const CHECKBOX_SELECT        = 1;
 const CHECKBOX_TEXT          = 2;
-const CHECKBOX_TEXT_UNDERLAY = 3;
 
 class CheckBox extends THREE.Object3D {
 	#text;
@@ -16,7 +16,7 @@ class CheckBox extends THREE.Object3D {
 	}
 	set text (txt) {
 		this.#text = txt;
-		this.#reDraw();
+		this.#generateTextMesh();
 	}
 	get textColor () {
 		return this.#textColor;
@@ -51,17 +51,19 @@ class CheckBox extends THREE.Object3D {
 		let textScale = this.#xHeight/xHeight;
 		textGeometry.dispose();
 		this.textSize = 100*textScale;
-		let geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(50,50);
+		const geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(50,50);
 		geometry.computeBoundingBox();
-		let material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x666666 });
-		let base = new THREE.Mesh(geometry, material);
+		const material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x666666 });
+		const base = new THREE.Mesh(geometry, material);
 		this.add(base);
-		let selectGeometry = parameters.selectGeometry !== undefined ? parameters.selectGeometry : new THREE.PlaneGeometry(25,25);
-		let selectMaterial =  parameters.selectMaterial !== undefined ? parameters.selectMaterial : new THREE.MeshBasicMaterial({ color: 0xffffff });
-		let select =  new THREE.Mesh(selectGeometry, selectMaterial);
+		const selectGeometry = parameters.selectGeometry !== undefined ? parameters.selectGeometry : new THREE.PlaneGeometry(25,25);
+		const selectMaterial =  parameters.selectMaterial !== undefined ? parameters.selectMaterial : new THREE.MeshBasicMaterial({ color: 0xffffff });
+		const select =  new THREE.Mesh(selectGeometry, selectMaterial);
 		select.visible = parameters.checked !== undefined ? parameters.checked : false;
 		select.position.z = 1;
 		this.add(select);
+		const textMesh = new TextMesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
+		this.add(textMesh);
 		this.#generateTextMesh();
 	}
 	set() {
@@ -88,26 +90,13 @@ class CheckBox extends THREE.Object3D {
 				bevelSegments: 0
 			});
 			textGeometry.computeBoundingBox();
+			this.children[CHECKBOX_TEXT].geometry = textGeometry;
 			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
 			let textGeometryHeight = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
-			const textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
 			let checkerWidth = Math.abs(this.children[CHECKBOX_BASE].geometry.boundingBox.max.x - this.children[CHECKBOX_BASE].geometry.boundingBox.min.x);
-			textMesh.position.x = checkerWidth/2 + checkerWidth/5;
-			textMesh.position.y = -this.#xHeight/2;
-			this.add(textMesh);
-			// for select from mouse move
-			const boundingPlaneGeometry = new THREE.PlaneGeometry(textGeometryWidth, textGeometryHeight);
-			const boundingPlaneMesh = new THREE.Mesh(boundingPlaneGeometry, new THREE.MeshBasicMaterial( { transparent: true, opacity: 0 } ));
-			boundingPlaneMesh.position.set(textMesh.position.x+textGeometryWidth/2,textMesh.position.y+textGeometryHeight/2,textMesh.position.z);
-			this.add(boundingPlaneMesh);
+			this.children[CHECKBOX_TEXT].position.x = checkerWidth/2 + checkerWidth/5;
+			this.children[CHECKBOX_TEXT].position.y = -this.#xHeight/2;
 		}
-	}
-	#reDraw() {
-		this.children[CHECKBOX_TEXT_UNDERLAY].geometry.dispose();
-		this.remove(this.children[CHECKBOX_TEXT_UNDERLAY]);
-		this.children[CHECKBOX_TEXT].geometry.dispose();
-		this.remove(this.children[CHECKBOX_TEXT]);
-		this.#generateTextMesh();
 	}
 	onmouseup ( intersect ) {
 		if (this.children[CHECKBOX_SELECT].visible) this.unset();

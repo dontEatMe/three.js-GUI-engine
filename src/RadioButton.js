@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { TextMesh }  from './Common.js';
 
 const RADIOBUTTON_BASE          = 0;
-const RADIOBUTTON_TEXT_UNDERLAY = 1;
-const RADIOBUTTON_TEXT          = 2;
+const RADIOBUTTON_TEXT          = 1;
 
 class RadioButton extends THREE.Object3D {
 	#text;
@@ -15,7 +15,7 @@ class RadioButton extends THREE.Object3D {
 	}
 	set text (txt) {
 		this.#text = txt;
-		this.#reDraw();
+		this.#generateTextMesh();
 	}
 	get textColor () {
 		return this.#textColor;
@@ -55,6 +55,8 @@ class RadioButton extends THREE.Object3D {
 		const material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x666666 });
 		const base = new THREE.Mesh(geometry, material);
 		this.add(base);
+		const textMesh = new TextMesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
+		this.add(textMesh);
 		this.#generateTextMesh();
 	}
 	changeColor( color ) {
@@ -75,26 +77,14 @@ class RadioButton extends THREE.Object3D {
 				bevelSegments: 0
 			});
 			textGeometry.computeBoundingBox();
+			this.children[RADIOBUTTON_TEXT].geometry = textGeometry;
 			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
 			let textGeometryHeight = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
-			let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
+			let textMesh = new TextMesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
 			let checkerWidth = Math.abs(this.children[RADIOBUTTON_BASE].geometry.boundingBox.max.x - this.children[RADIOBUTTON_BASE].geometry.boundingBox.min.x);
-			textMesh.position.x = checkerWidth/2 + checkerWidth/5;
-			textMesh.position.y = -this.#xHeight/2;
-			this.add(textMesh);
-			// for select from mouse move
-			let boundingPlaneGeometry = new THREE.PlaneGeometry(textGeometryWidth, textGeometryHeight);
-			let boundingPlaneMesh = new THREE.Mesh(boundingPlaneGeometry, new THREE.MeshBasicMaterial( { transparent: true, opacity: 0 } ));
-			boundingPlaneMesh.position.set(textMesh.position.x+textGeometryWidth/2,textMesh.position.y+textGeometryHeight/2,textMesh.position.z);
-			this.add(boundingPlaneMesh);
+			this.children[RADIOBUTTON_TEXT].position.x = checkerWidth/2 + checkerWidth/5;
+			this.children[RADIOBUTTON_TEXT].position.y = -this.#xHeight/2;
 		}
-	}
-	#reDraw() {
-		this.children[RADIOBUTTON_TEXT_UNDERLAY].geometry.dispose();
-		this.remove(this.children[RADIOBUTTON_TEXT_UNDERLAY]);
-		this.children[RADIOBUTTON_TEXT].geometry.dispose();
-		this.remove(this.children[RADIOBUTTON_TEXT]);
-		this.#generateTextMesh();
 	}
 	onmouseup ( intersect ) {
 		this.parent.selectedRadioButton = this;

@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { TextMesh }  from './Common.js';
 
-const LABEL_TEXT          = 0;
-const LABEL_TEXT_UNDERLAY = 1;
+const LABEL_TEXT = 0;
 
 class Label extends THREE.Object3D {
 	#text;
@@ -14,14 +14,14 @@ class Label extends THREE.Object3D {
 	}
 	set text (txt) {
 		this.#text = txt;
-		this.#reDraw();
+		this.#generateTextMesh();
 	}
 	get textColor () {
 		return this.#textColor;
 	}
 	set textColor (color) {
 		this.#textColor = color;
-		this.children[0].material.color.setHex(this.#textColor);
+		this.children[LABEL_TEXT].material.color.setHex(this.#textColor);
 	}
 	constructor( parameters ) {
 		super();
@@ -49,10 +49,13 @@ class Label extends THREE.Object3D {
 		let textScale = this.#xHeight/xHeight;
 		textGeometry.dispose();
 		this.textSize = 100*textScale;
+		const textMesh = new TextMesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
+		this.add(textMesh);
 		this.#generateTextMesh();
 	}
 	#generateTextMesh() {
 		if ( this.threeFont!==undefined ) {
+			this.children[LABEL_TEXT].geometry.dispose();
 			// regenerate TextGeometry with right scale
 			const textGeometry = new TextGeometry(this.#text, {
 				font: this.threeFont,
@@ -66,25 +69,12 @@ class Label extends THREE.Object3D {
 				bevelSegments: 0
 			});
 			textGeometry.computeBoundingBox();
+			this.children[LABEL_TEXT].geometry = textGeometry;
 			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
 			let textGeometryHeight = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
-			const textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
-			textMesh.position.x = -textGeometryWidth/2;
-			textMesh.position.y = -this.#xHeight/2;
-			this.add(textMesh);
-			// for select from mouse move
-			const boundingPlaneGeometry = new THREE.PlaneGeometry(textGeometryWidth, textGeometryHeight);
-			const boundingPlaneMesh = new THREE.Mesh(boundingPlaneGeometry, new THREE.MeshBasicMaterial( { transparent: true, opacity: 0 } ));
-			boundingPlaneMesh.position.set(textMesh.position.x+textGeometryWidth/2,textMesh.position.y+textGeometryHeight/2,textMesh.position.z);
-			this.add(boundingPlaneMesh);
+			this.children[LABEL_TEXT].position.x = -textGeometryWidth/2;
+			this.children[LABEL_TEXT].position.y = -this.#xHeight/2;
 		}
-	}
-	#reDraw() {
-		this.children[LABEL_TEXT_UNDERLAY].geometry.dispose();
-		this.remove(this.children[LABEL_TEXT_UNDERLAY]);
-		this.children[LABEL_TEXT].geometry.dispose();
-		this.remove(this.children[LABEL_TEXT]);
-		this.#generateTextMesh();
 	}
 	onmouseup ( intersect ) { }
 	onmousedown ( intersect ) { }

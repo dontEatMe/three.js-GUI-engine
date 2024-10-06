@@ -6,6 +6,10 @@ const EDITBOX_CURSOR     = 1;
 const EDITBOX_SELECTAREA = 2;
 const EDITBOX_TEXT       = 3;
 
+class XRayMesh extends THREE.Mesh {
+	raycast ( raycaster, intersects ) {	}
+}
+
 class EditBox extends THREE.Object3D {
 	#text;
 	#textColor;
@@ -68,7 +72,7 @@ class EditBox extends THREE.Object3D {
 	constructor( parameters ) {
 		super();
 		parameters = parameters || {};
-		this.cursor = parameters.cursor !== undefined ? parameters.cursor : 'pointer';
+		this.cursor = parameters.cursor !== undefined ? parameters.cursor : 'text';
 		this.#xHeight = parameters.xHeight !== undefined ? parameters.xHeight : 8; // x-height for font
 		this.#text = parameters.text !== undefined ? parameters.text : '';
 		this.#textColor = parameters.textColor !== undefined ? parameters.textColor : 0x000000;
@@ -115,11 +119,11 @@ class EditBox extends THREE.Object3D {
 		cursorLine.visible = false;
 		this.add(cursorLine);
 		const selectAreaGeometry = new THREE.PlaneGeometry(0, 0);
-		const selectArea = new THREE.Mesh(selectAreaGeometry, new THREE.MeshBasicMaterial( { color: 0x808080, clippingPlanes: [ new THREE.Plane( new THREE.Vector3( -1, 0, 0 ), 0), this.#localPlane ] } ));
+		const selectArea = new XRayMesh(selectAreaGeometry, new THREE.MeshBasicMaterial( { color: 0x808080, clippingPlanes: [ new THREE.Plane( new THREE.Vector3( -1, 0, 0 ), 0), this.#localPlane ] } ));
 		selectArea.visible = false;
 		selectArea.position.z = 1;
 		this.add(selectArea);
-		const textMesh = new THREE.Mesh(textGeometry, new THREE.MeshBasicMaterial({ color: this.isPlaceholder ? this.#placeholderColor : this.#textColor, clippingPlanes: [ this.#localPlane ] }));
+		const textMesh = new XRayMesh(textGeometry, new THREE.MeshBasicMaterial({ color: this.isPlaceholder ? this.#placeholderColor : this.#textColor, clippingPlanes: [ this.#localPlane ] }));
 		textMesh.position.z = 2;
 		this.add(textMesh); // TODO tipColor
 		this.#generateTextMesh();
@@ -137,7 +141,6 @@ class EditBox extends THREE.Object3D {
 			} else {
 				itemText = this.#text;
 			}
-			
 			this.children[EDITBOX_TEXT].geometry.dispose();
 			// regenerate TextGeometry with right scale
 			const textGeometry = new TextGeometry(this.isPlaceholder ? this.#placeholder : itemText, {
@@ -190,7 +193,10 @@ class EditBox extends THREE.Object3D {
 	}
 	onmouseup ( intersect ) { }
 	onmousedown ( intersect ) {
-		console.log(intersect);
+		console.log(intersect.object.geometry);
+		console.log(intersect.object.point);
+		//const shapes = font.generateShapes( text, parameters.size );
+
 		this.active = true;
 	}
 	onmouseover ( intersect ) {
