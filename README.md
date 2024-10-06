@@ -1,4 +1,7 @@
 # three.js-GUI-engine
+
+[![NPM Package][npm]][npm-url]  
+
 GUI engine for three.js. It allows to create interfaces by WebGL via three.js.  
 
 [npm package](https://www.npmjs.com/package/three.js-gui-engine)  
@@ -26,3 +29,5 @@ npm install
 example build:  
 npm run dev  
 npm run prod
+
+[npm-url]: https://www.npmjs.com/package/three.js-gui-engine
