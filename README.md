@@ -30,4 +30,5 @@ example build:
 npm run dev  
 npm run prod
 
+[npm]: https://img.shields.io/npm/v/three.js-gui-engine
 [npm-url]: https://www.npmjs.com/package/three.js-gui-engine
