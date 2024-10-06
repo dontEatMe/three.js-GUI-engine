@@ -4,11 +4,9 @@
 
 GUI engine for three.js. It allows to create interfaces by WebGL via three.js.  
 
-[npm package](https://www.npmjs.com/package/three.js-gui-engine)  
-
 [example](https://gui.lvlb.ru) (see example folder)  
 
-Allows to create the following elements:  
+Allows to create the following elements (inherited from THREE.Object3D):  
 
 GUI.Button - button  
 GUI.Panel - panel  
