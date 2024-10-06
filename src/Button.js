@@ -62,6 +62,7 @@ class Button extends THREE.Object3D {
 	}
 	#generateTextMesh() {
 		if ( this.threeFont!==undefined ) {
+			this.children[BUTTON_TEXT].geometry.dispose();
 			// regenerate TextGeometry with right scale
 			const textGeometry = new TextGeometry(this.#text, {
 				font: this.threeFont,
@@ -87,7 +88,7 @@ class Button extends THREE.Object3D {
 		this.changeColor( 0x888888 );
 	}
 	onmouseout ( object ) {
-		this.changeColor(0x666666);
+		this.changeColor( 0x666666 );
 	}
 }
 

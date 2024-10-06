@@ -77,6 +77,7 @@ class CheckBox extends THREE.Object3D {
 	}
 	#generateTextMesh() {
 		if ( this.threeFont!==undefined ) {
+			this.children[CHECKBOX_TEXT].geometry.dispose();
 			// regenerate TextGeometry with right scale
 			const textGeometry = new TextGeometry(this.#text, {
 				font: this.threeFont,

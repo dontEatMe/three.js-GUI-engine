@@ -213,7 +213,7 @@ class EditBox extends THREE.Object3D {
 		let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
 		console.log('textGeometryWidth', textGeometryWidth);
 		console.log('baseWidth-padding', boundingBoxWidth - this.#xHeight*2);
-		
+		console.log(this.children[EDITBOX_TEXT]);
 		
 		if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
 			this.children[EDITBOX_TEXT].position.x = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
