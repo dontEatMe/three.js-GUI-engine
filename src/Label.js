@@ -82,4 +82,4 @@ class Label extends THREE.Object3D {
 	onmouseout ( object ) { }
 }
 
-export default Label;
+export { Label, LABEL_TEXT };

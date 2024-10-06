@@ -7,7 +7,7 @@ const EDITBOX_SELECTAREA = 2;
 const EDITBOX_TEXT       = 3;
 
 class XRayMesh extends THREE.Mesh {
-	raycast ( raycaster, intersects ) {	}
+	raycast ( raycaster, intersects ) { }
 }
 
 class EditBox extends THREE.Object3D {
@@ -195,8 +195,32 @@ class EditBox extends THREE.Object3D {
 	onmousedown ( intersect ) {
 		console.log(intersect.object.geometry);
 		console.log(intersect.object.point);
-		//const shapes = font.generateShapes( text, parameters.size );
-
+		
+		const textGeometry = new TextGeometry(this.#text, {
+			font: this.threeFont,
+			size: this.textSize,
+			depth: 0,
+			curveSegments: 4,
+			bevelEnabled: false,
+			bevelThickness: 0,
+			bevelSize: 0,
+			bevelOffset: 0,
+			bevelSegments: 0
+		});
+		textGeometry.computeBoundingBox();
+		
+		let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+		let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
+		console.log('textGeometryWidth', textGeometryWidth);
+		console.log('baseWidth-padding', boundingBoxWidth - this.#xHeight*2);
+		
+		
+		if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
+			this.children[EDITBOX_TEXT].position.x = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
+		} else {
+			this.children[EDITBOX_TEXT].position.x = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
+		}
+	
 		this.active = true;
 	}
 	onmouseover ( intersect ) {
@@ -209,4 +233,4 @@ class EditBox extends THREE.Object3D {
 	}
 }
 
-export default EditBox;
+export { EditBox, EDITBOX_BASE, EDITBOX_CURSOR, EDITBOX_SELECTAREA, EDITBOX_TEXT };

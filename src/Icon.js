@@ -19,4 +19,4 @@ class Icon extends THREE.Object3D {
 	onmouseout ( object ) { }
 }
 
-export default Icon;
+export { Icon, ICON_BASE };

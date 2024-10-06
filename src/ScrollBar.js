@@ -79,4 +79,4 @@ class ScrollBar extends THREE.Object3D {
 	onscrolldown () { }
 }
 
-export default ScrollBar;
+export { ScrollBar, SCROLLBAR_SLIDER, SCROLLBAR_UP, SCROLLBAR_DOWN };

@@ -1,13 +1,13 @@
 import * as THREE from 'three';
-import Button from './Button.js';
-import CheckBox from './CheckBox.js';
-import EditBox from './EditBox.js';
-import Panel from './Panel.js';
-import Icon from './Icon.js';
-import RadioGroup from './RadioGroup.js';
-import RadioButton from './RadioButton.js';
-import Label from './Label.js';
-import ScrollBar from './ScrollBar.js';
+import { Button, BUTTON_BASE, BUTTON_TEXT } from './Button.js';
+import { CheckBox, CHECKBOX_BASE, CHECKBOX_SELECT, CHECKBOX_TEXT } from './CheckBox.js';
+import { EditBox, EDITBOX_BASE, EDITBOX_CURSOR, EDITBOX_SELECTAREA, EDITBOX_TEXT } from './EditBox.js';
+import { Panel, PANEL_BASE } from './Panel.js';
+import { Icon, ICON_BASE } from './Icon.js';
+import { RadioGroup, RADIOGROUP_SELECT} from './RadioGroup.js';
+import { RadioButton, RADIOBUTTON_BASE, RADIOBUTTON_TEXT } from './RadioButton.js';
+import { Label, LABEL_TEXT } from './Label.js';
+import { ScrollBar, SCROLLBAR_SLIDER, SCROLLBAR_UP, SCROLLBAR_DOWN } from './ScrollBar.js';
 
 const VERSION = '0.5.0';
 
@@ -143,4 +143,16 @@ function MouseWheel ( delta, scene ) {
 	});
 }
 
-export { VERSION, Button, CheckBox, EditBox, Panel, Icon, RadioGroup, RadioButton, Label, ScrollBar, KeyDown, KeyPress, MouseMove, MouseUp, MouseDown, MouseWheel };
+export {
+	VERSION,
+	KeyDown, KeyPress, MouseMove, MouseUp, MouseDown, MouseWheel,
+	Button, BUTTON_BASE, BUTTON_TEXT,
+	CheckBox, CHECKBOX_BASE, CHECKBOX_SELECT, CHECKBOX_TEXT,
+	EditBox, EDITBOX_BASE, EDITBOX_CURSOR, EDITBOX_SELECTAREA, EDITBOX_TEXT,
+	Panel, PANEL_BASE,
+	Icon, ICON_BASE,
+	RadioGroup, RADIOGROUP_SELECT,
+	RadioButton, RADIOBUTTON_BASE, RADIOBUTTON_TEXT,
+	Label, LABEL_TEXT,
+	ScrollBar, SCROLLBAR_SLIDER, SCROLLBAR_UP, SCROLLBAR_DOWN
+};

@@ -21,4 +21,4 @@ class Panel extends THREE.Object3D {
 	onmouseout ( object ) { }
 }
 
-export default Panel;
+export { Panel, PANEL_BASE };

@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { TextMesh }  from './Common.js';
 
-const CHECKBOX_BASE          = 0;
-const CHECKBOX_SELECT        = 1;
-const CHECKBOX_TEXT          = 2;
+const CHECKBOX_BASE   = 0;
+const CHECKBOX_SELECT = 1;
+const CHECKBOX_TEXT   = 2;
 
 class CheckBox extends THREE.Object3D {
 	#text;
@@ -111,4 +111,4 @@ class CheckBox extends THREE.Object3D {
 	}
 }
 
-export default CheckBox;
+export { CheckBox, CHECKBOX_BASE, CHECKBOX_SELECT, CHECKBOX_TEXT };

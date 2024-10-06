@@ -2,8 +2,8 @@ import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { TextMesh }  from './Common.js';
 
-const RADIOBUTTON_BASE          = 0;
-const RADIOBUTTON_TEXT          = 1;
+const RADIOBUTTON_BASE = 0;
+const RADIOBUTTON_TEXT = 1;
 
 class RadioButton extends THREE.Object3D {
 	#text;
@@ -98,4 +98,4 @@ class RadioButton extends THREE.Object3D {
 	}
 }
 
-export default RadioButton;
+export { RadioButton, RADIOBUTTON_BASE, RADIOBUTTON_TEXT };

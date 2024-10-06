@@ -57,8 +57,8 @@ const label1 = new GUI.Label( { text: 'Label1', textColor: 0xff0000, threeFont: 
 interfaceScene.add(label1);
 
 const label2 = new GUI.Label( { text: 'Label2', textColor: 0xffa500, threeFont: font, xHeight: 10} );
-const labelWidth = Math.abs(label2.children[0].geometry.boundingBox.max.x - label2.children[0].geometry.boundingBox.min.x);
-const labelHeight = Math.abs(label2.children[0].geometry.boundingBox.max.y - label2.children[0].geometry.boundingBox.min.y);
+const labelWidth = Math.abs(label2.children[GUI.LABEL_TEXT].geometry.boundingBox.max.x - label2.children[GUI.LABEL_TEXT].geometry.boundingBox.min.x);
+const labelHeight = Math.abs(label2.children[GUI.LABEL_TEXT].geometry.boundingBox.max.y - label2.children[GUI.LABEL_TEXT].geometry.boundingBox.min.y);
 label2.position.set( -container.width/2 + labelWidth/2 + 10, container.height/2 - labelHeight/2 - 10, 0 );
 interfaceScene.add(label2);
 

@@ -37,4 +37,4 @@ class RadioGroup extends THREE.Group {
 	onmouseout ( object ) { }
 }
 
-export default RadioGroup;
+export { RadioGroup, RADIOGROUP_SELECT };

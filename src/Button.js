@@ -14,7 +14,7 @@ class Button extends THREE.Object3D {
 	}
 	set text (txt) {
 		this.#text = txt;
-		this.#reDraw();
+		this.#generateTextMesh();
 	}
 	get textColor () {
 		return this.#textColor;
@@ -53,6 +53,8 @@ class Button extends THREE.Object3D {
 		const material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x666666 });
 		const base = new THREE.Mesh(geometry, material);
 		this.add(base);
+		const textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
+		this.add(textMesh);
 		this.#generateTextMesh();
 	}
 	changeColor( color ) {
@@ -73,17 +75,11 @@ class Button extends THREE.Object3D {
 				bevelSegments: 0
 			});
 			textGeometry.computeBoundingBox();
+			this.children[BUTTON_TEXT].geometry = textGeometry;
 			let textGeometryWidth = Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
-			let textMesh = new THREE.Mesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
-			textMesh.position.x = -textGeometryWidth/2;
-			textMesh.position.y = -this.#xHeight/2;
-			this.add(textMesh);
+			this.children[BUTTON_TEXT].position.x = -textGeometryWidth/2;
+			this.children[BUTTON_TEXT].position.y = -this.#xHeight/2;
 		}
-	}
-	#reDraw() {
-		this.children[BUTTON_TEXT].geometry.dispose();
-		this.remove(this.children[BUTTON_TEXT]);
-		this.#generateTextMesh();
 	}
 	onmouseup ( intersect ) { }
 	onmousedown ( intersect ) { }
@@ -95,4 +91,4 @@ class Button extends THREE.Object3D {
 	}
 }
 
-export default Button;
+export { Button, BUTTON_BASE, BUTTON_TEXT };
