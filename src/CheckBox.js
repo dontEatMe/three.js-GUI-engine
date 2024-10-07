@@ -54,11 +54,11 @@ class CheckBox extends THREE.Object3D {
 		const geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.PlaneGeometry(50,50);
 		geometry.computeBoundingBox();
 		const material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x666666 });
-		const base = new THREE.Mesh(geometry, material);
+		const base = new THREE.Mesh( geometry, material );
 		this.add(base);
 		const selectGeometry = parameters.selectGeometry !== undefined ? parameters.selectGeometry : new THREE.PlaneGeometry(25,25);
 		const selectMaterial =  parameters.selectMaterial !== undefined ? parameters.selectMaterial : new THREE.MeshBasicMaterial({ color: 0xffffff });
-		const select =  new THREE.Mesh(selectGeometry, selectMaterial);
+		const select =  new THREE.Mesh( selectGeometry, selectMaterial );
 		select.visible = parameters.checked !== undefined ? parameters.checked : false;
 		select.position.z = 1;
 		this.add(select);

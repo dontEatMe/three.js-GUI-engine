@@ -110,7 +110,7 @@ const editbox1 = new GUI.EditBox( {threeFont: font, placeholder: 'editbox'} );
 editbox1.position.set( 0, 50, 0 );
 interfaceScene.add(editbox1);
 
-const editbox2 = new GUI.EditBox({ password: true, placeholder: 'pass', text: 'asf', geometry: new THREE.CircleGeometry(80,32), xHeight: 10, threeFont: font} );
+const editbox2 = new GUI.EditBox({ password: true, placeholder: 'password', text: 'asf', geometry: new THREE.CircleGeometry(80,32), xHeight: 10, threeFont: font} );
 editbox2.position.set( -150, -50, 0 );
 interfaceScene.add(editbox2);
 

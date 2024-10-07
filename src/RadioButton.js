@@ -53,7 +53,7 @@ class RadioButton extends THREE.Object3D {
 		const geometry = parameters.geometry !== undefined ? parameters.geometry : new THREE.CircleGeometry(25,32);
 		geometry.computeBoundingBox();
 		const material = parameters.material !== undefined ? parameters.material : new THREE.MeshBasicMaterial({ color: 0x666666 });
-		const base = new THREE.Mesh(geometry, material);
+		const base = new THREE.Mesh( geometry, material );
 		this.add(base);
 		const textMesh = new TextMesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
 		this.add(textMesh);
@@ -81,7 +81,6 @@ class RadioButton extends THREE.Object3D {
 			this.children[RADIOBUTTON_TEXT].geometry = textGeometry;
 			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
 			let textGeometryHeight = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
-			let textMesh = new TextMesh( textGeometry, new THREE.MeshBasicMaterial({ color: this.#textColor }) );
 			let checkerWidth = Math.abs(this.children[RADIOBUTTON_BASE].geometry.boundingBox.max.x - this.children[RADIOBUTTON_BASE].geometry.boundingBox.min.x);
 			this.children[RADIOBUTTON_TEXT].position.x = checkerWidth/2 + checkerWidth/5;
 			this.children[RADIOBUTTON_TEXT].position.y = -this.#xHeight/2;
