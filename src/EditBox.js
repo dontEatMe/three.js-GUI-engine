@@ -17,6 +17,7 @@ class EditBoxText extends THREE.Object3D { // TODO for another objects with clic
 	#size;
 	#plane;
 	#material;
+	#letterSpacing = 2;
 	
 	get text () {
 		return this.#text;
@@ -42,13 +43,32 @@ class EditBoxText extends THREE.Object3D { // TODO for another objects with clic
 	
 	#generateTextMesh() {
 		if (this.threeFont !== undefined) {
-			this.children.forEach((child)=>child.geometry.dispose());
+			this.children.forEach((letterGroup) => {
+				letterGroup.children.forEach((child)=>child.geometry.dispose())
+			});
 			this.remove(...this.children);
-			const shapes = this.threeFont.generateShapes( this.#text, this.#size );
-			shapes.forEach((shape) => {
-				const geometry = new THREE.ShapeGeometry( shape );
-				geometry.computeBoundingBox();
-				this.add(new XRayMesh(geometry, this.#material))
+			let textArr = Array.from(this.#text);
+			textArr.forEach((letter, letterIndex)=> {
+				const letterShapes = this.threeFont.generateShapes( letter, this.#size );
+				const group = new THREE.Group();
+				letterShapes.forEach((shape) => {
+					const geometry = new THREE.ShapeGeometry( shape );
+					geometry.computeBoundingBox();
+					group.add(new XRayMesh(geometry, this.#material));
+
+				});
+				let letterMinX = group.children.reduce((accumulator, letterPart) => {
+					return accumulator<letterPart.geometry.boundingBox.min.x ? accumulator : letterPart.geometry.boundingBox.min.x;
+				}, Infinity);
+				let letterMaxX = group.children.reduce((accumulator, letterPart) => {
+					return accumulator>letterPart.geometry.boundingBox.max.x ? accumulator : letterPart.geometry.boundingBox.max.x;
+				}, -Infinity);
+				let letterSize = Math.abs(letterMaxX - letterMinX);
+				group.position.x = this.children.length===0 ? 0 : this.children.slice(0,letterIndex).reduce((accumulator, letter) => {
+					return accumulator+letter.letterSize+this.#letterSpacing;
+				}, 0);
+				group.letterSize = letterSize;
+				this.add(group);
 			});
 		}
 	}
@@ -78,6 +98,7 @@ class EditBox extends THREE.Object3D {
 		}
 		this.#active = act;
 		this.#generateTextMesh();
+		this.#updateCursorPos();
 	}
 	get text () {
 		return this.#text;
@@ -181,6 +202,18 @@ class EditBox extends THREE.Object3D {
 		this.text = startStr + newletter + endStr;
 		this.#updateCursorPos();
 	}
+	arrow(left) {
+		if (left) {
+			if (this.#textPointer!==-1) {
+				this.#textPointer--;
+			}
+		} else {
+			if (this.#textPointer+1<this.#text.length) {
+				this.#textPointer++;
+			}
+		}
+		this.#updateCursorPos();
+	}
 	removeLetter(back) {
 		let startStr, endStr;
 		if (back) {
@@ -208,26 +241,10 @@ class EditBox extends THREE.Object3D {
 				itemText = this.#text;
 			}
 			this.children[EDITBOX_TEXT].text = this.isPlaceholder ? this.#placeholder : itemText;
-			
-			// regenerate TextGeometry with right scale
-			const textGeometry = new TextGeometry(this.isPlaceholder ? this.#placeholder : itemText, {
-				font: this.threeFont,
-				size: this.textSize,
-				depth: 0,
-				curveSegments: 4,
-				bevelEnabled: false,
-				bevelThickness: 0,
-				bevelSize: 0,
-				bevelOffset: 0,
-				bevelSegments: 0
-			});
-			textGeometry.computeBoundingBox();
-			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[0].letterSize/2+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize/2;
 			this.children[EDITBOX_SELECTAREA].geometry.dispose();
 			this.children[EDITBOX_SELECTAREA].geometry = new THREE.PlaneGeometry(textGeometryWidth+this.#xHeight, this.#xHeight*2);
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
-			textGeometry.dispose();
-			
 			// clipping plane constant not updated on position set, update it before Mesh render
 			this.children[EDITBOX_BASE].onBeforeRender = function (renderer, scene, camera, geometry, material, group) {
 				if (this.parent.#active) {
@@ -236,7 +253,7 @@ class EditBox extends THREE.Object3D {
 					} else {
 						this.parent.children[EDITBOX_CURSOR].visible = ((Date.now() - this.parent.#activeTime) % 1500) < 750;
 					}
-					//this.parent.children[EDITBOX_SELECTAREA].visible = true;
+					this.parent.children[EDITBOX_SELECTAREA].visible = true;
 				} else {
 					this.parent.children[EDITBOX_CURSOR].visible = false;
 					this.parent.children[EDITBOX_SELECTAREA].visible = false;
@@ -256,14 +273,14 @@ class EditBox extends THREE.Object3D {
 	#updateCursorPos() {
 		if (this.children[EDITBOX_TEXT].children.length !== 0 && this.#textPointer!==-1) {
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
-			let textGeometryWidth = this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].geometry.boundingBox.max.x;
+			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[0].letterSize/2+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize/2;;
 			let editBoxPos = 0;
 			if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
 				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
 			} else {
 				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
 			}
-			this.children[EDITBOX_CURSOR].position.x = this.children[EDITBOX_TEXT].children[this.#textPointer].geometry.boundingBox.max.x+editBoxPos;
+			this.children[EDITBOX_CURSOR].position.x = this.children[EDITBOX_TEXT].children[this.#textPointer].position.x+this.children[EDITBOX_TEXT].children[this.#textPointer].letterSize+editBoxPos;
 		} else {
 			this.children[EDITBOX_CURSOR].position.x = this.children[EDITBOX_TEXT].position.x;
 		}
@@ -273,7 +290,7 @@ class EditBox extends THREE.Object3D {
 		this.active = true;
 		if (this.children[EDITBOX_TEXT].children.length !== 0) {
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
-			let textGeometryWidth = this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].geometry.boundingBox.max.x;
+			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[0].letterSize/2+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize/2;;
 			let editBoxPos = 0;
 			if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
 				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
@@ -281,7 +298,9 @@ class EditBox extends THREE.Object3D {
 				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
 			}
 			this.#textPointer = this.children[EDITBOX_TEXT].children.reduce((accum, letter, letterIndex) => {
-				return Math.abs((this.position.x+letter.geometry.boundingBox.max.x+editBoxPos)-intersect.point.x)<Math.abs((this.position.x+this.children[EDITBOX_TEXT].children[accum].geometry.boundingBox.max.x+editBoxPos)-intersect.point.x) ? letterIndex : accum;
+				let maxLetterX = letter.position.x+letter.letterSize;
+				let maxAccumLetterX = this.children[EDITBOX_TEXT].children[accum].position.x+this.children[EDITBOX_TEXT].children[accum].letterSize;
+				return Math.abs((this.position.x+maxLetterX+editBoxPos)-intersect.point.x)<Math.abs((this.position.x+maxAccumLetterX+editBoxPos)-intersect.point.x) ? letterIndex : accum;
 			}, this.children[EDITBOX_TEXT].children.length-1);
 		} else {
 			this.#textPointer = -1;

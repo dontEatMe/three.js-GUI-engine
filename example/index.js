@@ -9,8 +9,11 @@ fontJson.glyphs[' '].x_max = fontJson.glyphs['x'].x_max;
 fontJson.glyphs[' '].x_min = fontJson.glyphs['x'].x_min;
 fontJson.glyphs[' '].ha = fontJson.glyphs['x'].ha;
 fontJson.glyphs[' '].o = 'm '+fontJson.glyphs[' '].x_min+' 0 l '+fontJson.glyphs[' '].x_max+' 0 z ';
-
-const fontLoader = new FontLoader();
+if ("virtualKeyboard" in navigator) {
+  navigator.virtualKeyboard.overlaysContent = true;
+  navigator.virtualKeyboard.show();
+}
+let fontLoader = new FontLoader();
 const font = fontLoader.parse( fontJson );
 const texLoader = new THREE.TextureLoader();
 

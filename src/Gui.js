@@ -9,7 +9,7 @@ import { RadioButton, RADIOBUTTON_BASE, RADIOBUTTON_TEXT } from './RadioButton.j
 import { Label, LABEL_TEXT } from './Label.js';
 import { ScrollBar, SCROLLBAR_SLIDER, SCROLLBAR_UP, SCROLLBAR_DOWN } from './ScrollBar.js';
 
-const VERSION = '0.5.0';
+const VERSION = '0.5.1';
 
 const raycaster = new THREE.Raycaster();
 
@@ -42,11 +42,15 @@ function KeyDown ( event, scene ) {
 	doForChildren(scene.children, (guiChild)=>{
 		if (guiChild instanceof EditBox) {
 			if (guiChild.active) {
-				if (event.keyCode == 8) { // backspace
+				if (event.keyCode === 8) { // backspace
 					stopEvent(event);
 					guiChild.removeLetter(true);
-				} else if (event.keyCode == 46) { // delete
+				} else if (event.keyCode === 46) { // delete
 					guiChild.removeLetter(false);
+				} else if (event.keyCode === 37) { // arrow left
+					guiChild.arrow(true);
+				} else if (event.keyCode === 39) { // arrow right
+					guiChild.arrow(false);
 				}
 			}
 		}
