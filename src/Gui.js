@@ -42,9 +42,11 @@ function KeyDown ( event, scene ) {
 	doForChildren(scene.children, (guiChild)=>{
 		if (guiChild instanceof EditBox) {
 			if (guiChild.active) {
-				if (event.keyCode == 8) {
+				if (event.keyCode == 8) { // backspace
 					stopEvent(event);
-					guiChild.text=guiChild.text.slice(0,-1);
+					guiChild.removeLetter(true);
+				} else if (event.keyCode == 46) { // delete
+					guiChild.removeLetter(false);
 				}
 			}
 		}
@@ -58,7 +60,7 @@ function KeyPress ( event, scene ) {
 				if (event.keyCode != 13) {
 					if (guiChild.text.length+1<=guiChild.limit) {
 						const newletter = String.fromCharCode(event.keyCode||event.charCode);
-						guiChild.text=guiChild.text+newletter;
+						guiChild.addLetter(newletter);
 					}
 				}
 			}
