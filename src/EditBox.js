@@ -18,7 +18,7 @@ class EditBoxText extends THREE.Object3D { // TODO for another objects with clic
 	#planeLeft;
 	#planeRight;
 	#material;
-	#letterSpacing = 2;
+	#letterSpacing;
 	
 	get text () {
 		return this.#text;
@@ -37,6 +37,7 @@ class EditBoxText extends THREE.Object3D { // TODO for another objects with clic
 		this.#size = parameters.size !== undefined ? parameters.size : undefined;
 		this.#textColor = parameters.textColor !== undefined ? parameters.textColor : 0xffffff;
 		this.threeFont = parameters.threeFont!==undefined ? parameters.threeFont : undefined;
+		this.#letterSpacing = parameters.letterSpacing !== undefined ? parameters.letterSpacing : 2;
 		this.#planeLeft = parameters.planeLeft;
 		this.#planeRight = parameters.planeRight;
 		this.#material = new THREE.MeshBasicMaterial( { color: this.#textColor, clippingPlanes: [ this.#planeLeft, this.#planeRight ]});
@@ -87,6 +88,7 @@ class EditBox extends THREE.Object3D {
 	#localPlaneRight = new THREE.Plane( new THREE.Vector3( -1, 0, 0 ), 0);
 	#textPointer = -1;
 	#startSelectTextPointer;
+	#letterSpacing = 2;
 
 	get active () {
 		return this.#active;
@@ -189,7 +191,7 @@ class EditBox extends THREE.Object3D {
 		selectArea.visible = false;
 		selectArea.position.z = 1;
 		this.add(selectArea);
-		const textMesh = new EditBoxText( {threeFont: this.threeFont, text: this.#text, textColor: this.#textColor, size: this.textSize, planeLeft: this.#localPlaneLeft, planeRight: this.#localPlaneRight } );
+		const textMesh = new EditBoxText( {threeFont: this.threeFont, text: this.#text, textColor: this.#textColor, size: this.textSize, letterSpacing: this.#letterSpacing, planeLeft: this.#localPlaneLeft, planeRight: this.#localPlaneRight } );
 		textMesh.position.z = 2;
 		textMesh.position.y = -this.#xHeight/2;
 		this.add(textMesh); // TODO tipColor
@@ -247,7 +249,7 @@ class EditBox extends THREE.Object3D {
 				itemText = this.#text;
 			}
 			this.children[EDITBOX_TEXT].text = this.isPlaceholder ? this.#placeholder : itemText;
-			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize;
+			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize+this.#letterSpacing;
 			this.children[EDITBOX_SELECTAREA].geometry.dispose();
 			this.children[EDITBOX_SELECTAREA].geometry = new THREE.PlaneGeometry(textGeometryWidth, this.#xHeight*2);
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
@@ -276,8 +278,8 @@ class EditBox extends THREE.Object3D {
 		let editBoxPos = this.children[EDITBOX_TEXT].position.x;
 		if (this.children[EDITBOX_TEXT].children.length !== 0 && this.#textPointer!==-1) {
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
-			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize;
-			const newCursorPos = this.children[EDITBOX_TEXT].children[this.#textPointer].position.x+this.children[EDITBOX_TEXT].children[this.#textPointer].letterSize; // relative to EDITBOX_TEXT position
+			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize+this.#letterSpacing;
+			const newCursorPos = this.children[EDITBOX_TEXT].children[this.#textPointer].position.x+this.children[EDITBOX_TEXT].children[this.#textPointer].letterSize+this.#letterSpacing; // relative to EDITBOX_TEXT position
 			if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
 				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
 			} else {
@@ -305,10 +307,10 @@ class EditBox extends THREE.Object3D {
 		this.active = true;
 		if (this.children[EDITBOX_TEXT].children.length !== 0) {
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
-			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize;
+			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize+this.#letterSpacing;
 			this.#textPointer = this.children[EDITBOX_TEXT].children.reduce((accum, letter, letterIndex) => {
-				let maxLetterX = letter.position.x+letter.letterSize;
-				let maxAccumLetterX = this.children[EDITBOX_TEXT].children[accum].position.x+this.children[EDITBOX_TEXT].children[accum].letterSize;
+				let maxLetterX = letter.position.x+letter.letterSize+this.#letterSpacing;
+				let maxAccumLetterX = this.children[EDITBOX_TEXT].children[accum].position.x+this.children[EDITBOX_TEXT].children[accum].letterSize+this.#letterSpacing;
 				return Math.abs((this.position.x+maxLetterX+this.children[EDITBOX_TEXT].position.x)-intersect.point.x)<Math.abs((this.position.x+maxAccumLetterX+this.children[EDITBOX_TEXT].position.x)-intersect.point.x) ? letterIndex : accum;
 			}, this.children[EDITBOX_TEXT].children.length-1);
 		} else {
