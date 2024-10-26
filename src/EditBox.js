@@ -275,22 +275,22 @@ class EditBox extends THREE.Object3D {
 		}
 	}
 	#updateCursorPos() {
+		let editBoxPos = this.children[EDITBOX_TEXT].position.x;
 		if (this.children[EDITBOX_TEXT].children.length !== 0 && this.#textPointer!==-1) {
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
 			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[0].letterSize/2+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize/2;;
-			let editBoxPos = this.children[EDITBOX_TEXT].position.x;
 			const newCursorPos = this.children[EDITBOX_TEXT].children[this.#textPointer].position.x+this.children[EDITBOX_TEXT].children[this.#textPointer].letterSize; // relative to EDITBOX_TEXT position
 			if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
 				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
 			} else if (editBoxPos+newCursorPos<this.children[EDITBOX_BASE].geometry.boundingBox.min.x+this.#xHeight) {
-				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight - this.children[EDITBOX_TEXT].children[this.#textPointer].position.x;
+				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight - newCursorPos;
 			} else if (editBoxPos+newCursorPos>this.children[EDITBOX_BASE].geometry.boundingBox.max.x-this.#xHeight) {
-				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + boundingBoxWidth - this.#xHeight*2 - this.children[EDITBOX_TEXT].children[this.#textPointer].position.x;
+				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.#xHeight - newCursorPos;
 			}
-			this.children[EDITBOX_CURSOR].position.x = newCursorPos+editBoxPos;
+			this.children[EDITBOX_CURSOR].position.x = editBoxPos+newCursorPos;
 			this.children[EDITBOX_TEXT].position.x = editBoxPos;
 		} else {
-			this.children[EDITBOX_CURSOR].position.x = this.children[EDITBOX_TEXT].position.x;
+			this.children[EDITBOX_CURSOR].position.x = editBoxPos;
 		}
 	}
 	onmouseup ( intersect ) { }
