@@ -191,8 +191,10 @@ class EditBox extends THREE.Object3D {
 		const textMesh = new EditBoxText( {threeFont: this.threeFont, text: this.#text, textColor: this.#textColor, size: this.textSize, planeLeft: this.#localPlaneLeft, planeRight: this.#localPlaneRight } );
 		//new XRayMesh(textGeometry, new THREE.MeshBasicMaterial({ color: this.isPlaceholder ? this.#placeholderColor : this.#textColor, clippingPlanes: [ this.#localPlaneLeft ] }));
 		textMesh.position.z = 2;
+		textMesh.position.y = -this.#xHeight/2;
 		this.add(textMesh); // TODO tipColor
 		this.#generateTextMesh();
+		this.#updateCursorPos();
 	}
 	changeColor( color ) {
 		this.children[EDITBOX_BASE].material.color.setHex(color);
@@ -265,12 +267,6 @@ class EditBox extends THREE.Object3D {
 				this.parent.#localPlaneLeft.constant = -this.parent.position.x + Math.abs(this.parent.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.parent.children[EDITBOX_BASE].geometry.boundingBox.min.x)/2 - this.parent.#xHeight;
 				this.parent.#localPlaneRight.constant = this.parent.position.x + Math.abs(this.parent.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.parent.children[EDITBOX_BASE].geometry.boundingBox.min.x)/2 - this.parent.#xHeight;
 			};
-			if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
-				this.children[EDITBOX_TEXT].position.x = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
-			} else {
-				this.children[EDITBOX_TEXT].position.x = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
-			}
-			this.children[EDITBOX_TEXT].position.y = -this.#xHeight/2;
 			this.children[EDITBOX_SELECTAREA].position.set(this.children[EDITBOX_TEXT].position.x+textGeometryWidth/2,this.children[EDITBOX_TEXT].position.y+this.#xHeight/2,this.children[EDITBOX_SELECTAREA].position.z);
 		}
 	}
@@ -282,15 +278,24 @@ class EditBox extends THREE.Object3D {
 			const newCursorPos = this.children[EDITBOX_TEXT].children[this.#textPointer].position.x+this.children[EDITBOX_TEXT].children[this.#textPointer].letterSize; // relative to EDITBOX_TEXT position
 			if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
 				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
-			} else if (editBoxPos+newCursorPos<this.children[EDITBOX_BASE].geometry.boundingBox.min.x+this.#xHeight) {
-				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight - newCursorPos;
-			} else if (editBoxPos+newCursorPos>this.children[EDITBOX_BASE].geometry.boundingBox.max.x-this.#xHeight) {
-				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.#xHeight - newCursorPos;
+			} else {
+				if (editBoxPos+newCursorPos<this.children[EDITBOX_BASE].geometry.boundingBox.min.x+this.#xHeight) {
+					editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight - newCursorPos;
+				} else if (editBoxPos+newCursorPos>this.children[EDITBOX_BASE].geometry.boundingBox.max.x-this.#xHeight) {
+					editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.#xHeight - newCursorPos;
+				} else { // text over area, cursor inside area
+				}
+				if (editBoxPos+textGeometryWidth<this.children[EDITBOX_BASE].geometry.boundingBox.max.x-this.#xHeight) {
+					editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
+				}
 			}
+			
 			this.children[EDITBOX_CURSOR].position.x = editBoxPos+newCursorPos;
 			this.children[EDITBOX_TEXT].position.x = editBoxPos;
 		} else {
+			editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
 			this.children[EDITBOX_CURSOR].position.x = editBoxPos;
+			this.children[EDITBOX_TEXT].position.x = editBoxPos;
 		}
 	}
 	onmouseup ( intersect ) { }
@@ -299,16 +304,10 @@ class EditBox extends THREE.Object3D {
 		if (this.children[EDITBOX_TEXT].children.length !== 0) {
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
 			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[0].letterSize/2+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize/2;;
-			let editBoxPos = 0;
-			if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
-				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
-			} else {
-				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
-			}
 			this.#textPointer = this.children[EDITBOX_TEXT].children.reduce((accum, letter, letterIndex) => {
 				let maxLetterX = letter.position.x+letter.letterSize;
 				let maxAccumLetterX = this.children[EDITBOX_TEXT].children[accum].position.x+this.children[EDITBOX_TEXT].children[accum].letterSize;
-				return Math.abs((this.position.x+maxLetterX+editBoxPos)-intersect.point.x)<Math.abs((this.position.x+maxAccumLetterX+editBoxPos)-intersect.point.x) ? letterIndex : accum;
+				return Math.abs((this.position.x+maxLetterX+this.children[EDITBOX_TEXT].position.x)-intersect.point.x)<Math.abs((this.position.x+maxAccumLetterX+this.children[EDITBOX_TEXT].position.x)-intersect.point.x) ? letterIndex : accum;
 			}, this.children[EDITBOX_TEXT].children.length-1);
 		} else {
 			this.#textPointer = -1;
