@@ -109,7 +109,7 @@ checkbox2.onmouseover = function(object) { this.changeColor(0x668866); }
 checkbox2.onmouseout = function(object) { this.changeColor(0x88aa88); }
 interfaceScene.add(checkbox2);
 
-const editbox1 = new GUI.EditBox( {threeFont: font, placeholder: 'editbox'} );
+const editbox1 = new GUI.EditBox( {threeFont: font, placeholder: 'editbox', text: 'ABCDEFGHIGKLMNOP'} );
 editbox1.position.set( 0, 50, 0 );
 interfaceScene.add(editbox1);
 
