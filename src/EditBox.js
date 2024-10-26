@@ -15,7 +15,8 @@ class EditBoxText extends THREE.Object3D { // TODO for another objects with clic
 	#textColor;
 	#xHeight;
 	#size;
-	#plane;
+	#planeLeft;
+	#planeRight;
 	#material;
 	#letterSpacing = 2;
 	
@@ -36,8 +37,9 @@ class EditBoxText extends THREE.Object3D { // TODO for another objects with clic
 		this.#size = parameters.size !== undefined ? parameters.size : undefined;
 		this.#textColor = parameters.textColor !== undefined ? parameters.textColor : 0xffffff;
 		this.threeFont = parameters.threeFont!==undefined ? parameters.threeFont : undefined;
-		this.#plane = parameters.plane;
-		this.#material = new THREE.MeshBasicMaterial( { color: this.#textColor, clippingPlanes: [ this.#plane ]});
+		this.#planeLeft = parameters.planeLeft;
+		this.#planeRight = parameters.planeRight;
+		this.#material = new THREE.MeshBasicMaterial( { color: this.#textColor, clippingPlanes: [ this.#planeLeft, this.#planeRight ]});
 		this.#generateTextMesh();
 	}
 	
@@ -55,7 +57,6 @@ class EditBoxText extends THREE.Object3D { // TODO for another objects with clic
 					const geometry = new THREE.ShapeGeometry( shape );
 					geometry.computeBoundingBox();
 					group.add(new XRayMesh(geometry, this.#material));
-
 				});
 				let letterMinX = group.children.reduce((accumulator, letterPart) => {
 					return accumulator<letterPart.geometry.boundingBox.min.x ? accumulator : letterPart.geometry.boundingBox.min.x;
@@ -82,7 +83,8 @@ class EditBox extends THREE.Object3D {
 	#placeholderColor;
 	#active = false;
 	#activeTime = 0;
-	#localPlane = new THREE.Plane( new THREE.Vector3( 1, 0, 0 ), 0);
+	#localPlaneLeft = new THREE.Plane( new THREE.Vector3( 1, 0, 0 ), 0);
+	#localPlaneRight = new THREE.Plane( new THREE.Vector3( -1, 0, 0 ), 0);
 	#textPointer = -1;
 	#startSelectTextPointer;
 
@@ -182,12 +184,12 @@ class EditBox extends THREE.Object3D {
 		cursorLine.position.z = 3;
 		this.add(cursorLine);
 		const selectAreaGeometry = new THREE.PlaneGeometry(0, 0);
-		const selectArea = new XRayMesh(selectAreaGeometry, new THREE.MeshBasicMaterial( { color: 0x808080, clippingPlanes: [ new THREE.Plane( new THREE.Vector3( -1, 0, 0 ), 0), this.#localPlane ] } ));
+		const selectArea = new XRayMesh(selectAreaGeometry, new THREE.MeshBasicMaterial( { color: 0x808080, clippingPlanes: [ this.#localPlaneLeft, this.#localPlaneRight ] } ));
 		selectArea.visible = false;
 		selectArea.position.z = 1;
 		this.add(selectArea);
-		const textMesh = new EditBoxText( {threeFont: this.threeFont, text: this.#text, textColor: this.#textColor, size: this.textSize, plane: this.#localPlane } );
-		//new XRayMesh(textGeometry, new THREE.MeshBasicMaterial({ color: this.isPlaceholder ? this.#placeholderColor : this.#textColor, clippingPlanes: [ this.#localPlane ] }));
+		const textMesh = new EditBoxText( {threeFont: this.threeFont, text: this.#text, textColor: this.#textColor, size: this.textSize, planeLeft: this.#localPlaneLeft, planeRight: this.#localPlaneRight } );
+		//new XRayMesh(textGeometry, new THREE.MeshBasicMaterial({ color: this.isPlaceholder ? this.#placeholderColor : this.#textColor, clippingPlanes: [ this.#localPlaneLeft ] }));
 		textMesh.position.z = 2;
 		this.add(textMesh); // TODO tipColor
 		this.#generateTextMesh();
@@ -243,7 +245,7 @@ class EditBox extends THREE.Object3D {
 			this.children[EDITBOX_TEXT].text = this.isPlaceholder ? this.#placeholder : itemText;
 			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[0].letterSize/2+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize/2;
 			this.children[EDITBOX_SELECTAREA].geometry.dispose();
-			this.children[EDITBOX_SELECTAREA].geometry = new THREE.PlaneGeometry(textGeometryWidth+this.#xHeight, this.#xHeight*2);
+			this.children[EDITBOX_SELECTAREA].geometry = new THREE.PlaneGeometry(textGeometryWidth, this.#xHeight*2);
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
 			// clipping plane constant not updated on position set, update it before Mesh render
 			this.children[EDITBOX_BASE].onBeforeRender = function (renderer, scene, camera, geometry, material, group) {
@@ -258,8 +260,10 @@ class EditBox extends THREE.Object3D {
 					this.parent.children[EDITBOX_CURSOR].visible = false;
 					this.parent.children[EDITBOX_SELECTAREA].visible = false;
 				}
-				this.parent.#localPlane.constant = -this.parent.position.x + Math.abs(this.parent.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.parent.children[EDITBOX_BASE].geometry.boundingBox.min.x)/2 - this.parent.#xHeight;
-				this.parent.children[EDITBOX_SELECTAREA].material.clippingPlanes[0].constant = this.parent.position.x + this.parent.children[EDITBOX_CURSOR].position.x;
+				
+				this.parent.children[EDITBOX_SELECTAREA].visible = false; // TODO remove me
+				this.parent.#localPlaneLeft.constant = -this.parent.position.x + Math.abs(this.parent.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.parent.children[EDITBOX_BASE].geometry.boundingBox.min.x)/2 - this.parent.#xHeight;
+				this.parent.#localPlaneRight.constant = this.parent.position.x + Math.abs(this.parent.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.parent.children[EDITBOX_BASE].geometry.boundingBox.min.x)/2 - this.parent.#xHeight;
 			};
 			if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
 				this.children[EDITBOX_TEXT].position.x = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
@@ -274,13 +278,17 @@ class EditBox extends THREE.Object3D {
 		if (this.children[EDITBOX_TEXT].children.length !== 0 && this.#textPointer!==-1) {
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
 			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[0].letterSize/2+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize/2;;
-			let editBoxPos = 0;
+			let editBoxPos = this.children[EDITBOX_TEXT].position.x;
+			const newCursorPos = this.children[EDITBOX_TEXT].children[this.#textPointer].position.x+this.children[EDITBOX_TEXT].children[this.#textPointer].letterSize; // relative to EDITBOX_TEXT position
 			if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
 				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
-			} else {
-				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.max.x - textGeometryWidth - this.#xHeight;
+			} else if (editBoxPos+newCursorPos<this.children[EDITBOX_BASE].geometry.boundingBox.min.x+this.#xHeight) {
+				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight - this.children[EDITBOX_TEXT].children[this.#textPointer].position.x;
+			} else if (editBoxPos+newCursorPos>this.children[EDITBOX_BASE].geometry.boundingBox.max.x-this.#xHeight) {
+				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + boundingBoxWidth - this.#xHeight*2 - this.children[EDITBOX_TEXT].children[this.#textPointer].position.x;
 			}
-			this.children[EDITBOX_CURSOR].position.x = this.children[EDITBOX_TEXT].children[this.#textPointer].position.x+this.children[EDITBOX_TEXT].children[this.#textPointer].letterSize+editBoxPos;
+			this.children[EDITBOX_CURSOR].position.x = newCursorPos+editBoxPos;
+			this.children[EDITBOX_TEXT].position.x = editBoxPos;
 		} else {
 			this.children[EDITBOX_CURSOR].position.x = this.children[EDITBOX_TEXT].position.x;
 		}
