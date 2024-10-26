@@ -247,7 +247,7 @@ class EditBox extends THREE.Object3D {
 				itemText = this.#text;
 			}
 			this.children[EDITBOX_TEXT].text = this.isPlaceholder ? this.#placeholder : itemText;
-			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[0].letterSize/2+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize/2;
+			let textGeometryWidth = (this.#text === '') ? 0 : Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize;
 			this.children[EDITBOX_SELECTAREA].geometry.dispose();
 			this.children[EDITBOX_SELECTAREA].geometry = new THREE.PlaneGeometry(textGeometryWidth, this.#xHeight*2);
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
@@ -276,7 +276,7 @@ class EditBox extends THREE.Object3D {
 		let editBoxPos = this.children[EDITBOX_TEXT].position.x;
 		if (this.children[EDITBOX_TEXT].children.length !== 0 && this.#textPointer!==-1) {
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
-			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[0].letterSize/2+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize/2;
+			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize;
 			const newCursorPos = this.children[EDITBOX_TEXT].children[this.#textPointer].position.x+this.children[EDITBOX_TEXT].children[this.#textPointer].letterSize; // relative to EDITBOX_TEXT position
 			if (textGeometryWidth <= boundingBoxWidth - this.#xHeight*2) {
 				editBoxPos = this.children[EDITBOX_BASE].geometry.boundingBox.min.x + this.#xHeight;
@@ -305,7 +305,7 @@ class EditBox extends THREE.Object3D {
 		this.active = true;
 		if (this.children[EDITBOX_TEXT].children.length !== 0) {
 			let boundingBoxWidth = Math.abs(this.children[EDITBOX_BASE].geometry.boundingBox.max.x - this.children[EDITBOX_BASE].geometry.boundingBox.min.x);
-			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[0].letterSize/2+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize/2;
+			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize;
 			this.#textPointer = this.children[EDITBOX_TEXT].children.reduce((accum, letter, letterIndex) => {
 				let maxLetterX = letter.position.x+letter.letterSize;
 				let maxAccumLetterX = this.children[EDITBOX_TEXT].children[accum].position.x+this.children[EDITBOX_TEXT].children[accum].letterSize;
