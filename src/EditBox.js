@@ -108,6 +108,7 @@ class EditBox extends THREE.Object3D {
 	set text (txt) {
 		this.#activeTime = Date.now();
 		this.#text = txt;
+		this.#textPointer = txt.length-1;
 		this.#generateTextMesh();
 	}
 	get textColor () {
@@ -203,7 +204,8 @@ class EditBox extends THREE.Object3D {
 		this.#textPointer++;
 		let startStr = this.#text.slice(0, this.#textPointer);
 		let endStr = this.#text.slice(this.#textPointer);
-		this.text = startStr + newletter + endStr;
+		this.#text = startStr + newletter + endStr;
+		this.#generateTextMesh();
 		this.#updateCursorPos();
 	}
 	arrow(left) {
@@ -225,20 +227,21 @@ class EditBox extends THREE.Object3D {
 				this.#textPointer--;
 				startStr = this.#text.slice(0, this.#textPointer+1);
 				endStr = this.#text.slice(this.#textPointer+2);
-				this.text = startStr + endStr;
+				this.#text = startStr + endStr;
 			}
 		} else {
 			startStr = this.#text.slice(0, this.#textPointer+1);
 			endStr = this.#text.slice(this.#textPointer+2);
-			this.text = startStr + endStr;
+			this.#text = startStr + endStr;
 		}
+		this.#generateTextMesh();
 		this.#updateCursorPos();
 	}
 	#generateTextMesh() {
 		if ( this.threeFont!==undefined ) {
 			let itemText = ''; // TODO getter/setter
 			if (this.password === true) {
-				for (let i=0; i<this.text.length; i++) {
+				for (let i=0; i<this.#text.length; i++) {
 					itemText+='*';
 				}
 			} else {
