@@ -310,9 +310,14 @@ class EditBox extends THREE.Object3D {
 			let textGeometryWidth = Math.abs(this.children[EDITBOX_TEXT].children[0].position.x - this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].position.x)+this.children[EDITBOX_TEXT].children[this.children[EDITBOX_TEXT].children.length-1].letterSize+this.#letterSpacing;
 			this.#textPointer = this.children[EDITBOX_TEXT].children.reduce((accum, letter, letterIndex) => {
 				let maxLetterX = letter.position.x+letter.letterSize+this.#letterSpacing;
-				let maxAccumLetterX = this.children[EDITBOX_TEXT].children[accum].position.x+this.children[EDITBOX_TEXT].children[accum].letterSize+this.#letterSpacing;
+				let maxAccumLetterX;
+				if (accum !== -1) {
+					maxAccumLetterX = this.children[EDITBOX_TEXT].children[accum].position.x+this.children[EDITBOX_TEXT].children[accum].letterSize+this.#letterSpacing;
+				} else {
+					maxAccumLetterX = 0;
+				}
 				return Math.abs((this.position.x+maxLetterX+this.children[EDITBOX_TEXT].position.x)-intersect.point.x)<Math.abs((this.position.x+maxAccumLetterX+this.children[EDITBOX_TEXT].position.x)-intersect.point.x) ? letterIndex : accum;
-			}, this.children[EDITBOX_TEXT].children.length-1);
+			}, -1);
 		} else {
 			this.#textPointer = -1;
 		}
