@@ -112,6 +112,7 @@ class EditBox extends THREE.Object3D {
 		this.#text = txt;
 		this.#textPointer = txt.length-1;
 		this.#generateTextMesh();
+		this.#updateCursorPos();
 	}
 	get textColor () {
 		return this.#textColor;
