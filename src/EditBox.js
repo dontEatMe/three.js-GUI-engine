@@ -108,11 +108,9 @@ class EditBox extends THREE.Object3D {
 		return this.#text;
 	}
 	set text (txt) {
-		this.#activeTime = Date.now();
 		this.#text = txt;
 		this.#textPointer = txt.length-1;
 		this.#generateTextMesh();
-		this.#updateCursorPos();
 	}
 	get textColor () {
 		return this.#textColor;
@@ -203,6 +201,7 @@ class EditBox extends THREE.Object3D {
 		this.children[EDITBOX_BASE].material.color.setHex(color);
 	}
 	addLetter(newletter) {
+		this.#activeTime = Date.now();
 		this.#textPointer++;
 		let startStr = this.#text.slice(0, this.#textPointer);
 		let endStr = this.#text.slice(this.#textPointer);
@@ -211,6 +210,7 @@ class EditBox extends THREE.Object3D {
 		this.#updateCursorPos();
 	}
 	arrow(left) {
+		this.#activeTime = Date.now();
 		if (left) {
 			if (this.#textPointer!==-1) {
 				this.#textPointer--;
@@ -223,6 +223,7 @@ class EditBox extends THREE.Object3D {
 		this.#updateCursorPos();
 	}
 	removeLetter(back) {
+		this.#activeTime = Date.now();
 		let startStr, endStr;
 		if (back) {
 			if (this.#textPointer !== -1) {
