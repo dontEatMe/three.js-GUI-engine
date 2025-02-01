@@ -9,7 +9,7 @@ import { RadioButton, RADIOBUTTON_BASE, RADIOBUTTON_TEXT } from './RadioButton.j
 import { Label, LABEL_TEXT } from './Label.js';
 import { ScrollBar, SCROLLBAR_SLIDER, SCROLLBAR_UP, SCROLLBAR_DOWN } from './ScrollBar.js';
 
-const VERSION = '0.5.12';
+const VERSION = '0.5.13';
 
 const raycaster = new THREE.Raycaster();
 
