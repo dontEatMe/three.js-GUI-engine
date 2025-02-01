@@ -8,7 +8,8 @@
     "prod": "webpack --mode=production"
   },
   "dependencies": {
-    "three.js-gui-engine": "^0.5.11"
+	"three": "^0.173.0"
+    "three.js-gui-engine": "^0.5.12"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^12.0.2",
