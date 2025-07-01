@@ -1,6 +1,6 @@
 {
   "name": "three.js-gui-engine",
-  "version": "0.5.15",
+  "version": "0.5.16",
   "description": "GUI engine for three.js",
   "type": "module",
   "module": "./src/Gui.js",
@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/dontEatMe/three.js-GUI-engine#readme",
   "peerDependencies": {
-    "three": ">=0.176.0"
+    "three": ">=0.178.0"
   }
 }
