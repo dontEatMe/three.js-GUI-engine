@@ -47,8 +47,8 @@ interfaceScene.add(button1);
 const button2 = new GUI.Button( { threeFont: font, text: 'Three.js', textColor: 0xffa500, xHeight: 14, material: new THREE.MeshBasicMaterial({color: 0x444444}), geometry: new THREE.CircleGeometry(50,32)} );
 button2.onmouseover = function(object) { this.changeColor(0x666666); }
 button2.onmouseout = function(object) { this.changeColor(0x444444); }
-button2.onmouseup = function(object) { console.log('THREEup'); }
-button2.onmousedown = function(object) { console.log('THREEdown'); this.text = 'test'; }
+button2.onmouseup = function(object) { this.text = 'Three.js'; }
+button2.onmousedown = function(object) { this.text = 'test'; }
 button2.position.set( 280, 80, 0 );
 interfaceScene.add(button2);
 
