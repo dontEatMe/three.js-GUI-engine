@@ -8,12 +8,12 @@
     "prod": "webpack --mode=production"
   },
   "dependencies": {
-    "three": "^0.182.0",
-    "three.js-gui-engine": "^0.5.18"
+    "three": "^0.184.0",
+    "three.js-gui-engine": "^0.5.19"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^13.0.1",
-    "webpack": "^5.103.0",
-    "webpack-cli": "^6.0.1"
+    "copy-webpack-plugin": "^14.0.0",
+    "webpack": "^5.106.2",
+    "webpack-cli": "^7.0.2"
   }
 }
