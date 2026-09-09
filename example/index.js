@@ -3,16 +3,6 @@ import { FontLoader } from 'three/addons/loaders/FontLoader';
 import * as GUI from 'three.js-gui-engine';
 import fontJson from './fonts/Arial_Regular.typeface.json';
 
-// init
-// hack for space symbol at start/end of string
-fontJson.glyphs[' '].x_max = fontJson.glyphs['x'].x_max;
-fontJson.glyphs[' '].x_min = fontJson.glyphs['x'].x_min;
-fontJson.glyphs[' '].ha = fontJson.glyphs['x'].ha;
-fontJson.glyphs[' '].o = 'm '+fontJson.glyphs[' '].x_min+' 0 l '+fontJson.glyphs[' '].x_max+' 0 z ';
-if ("virtualKeyboard" in navigator) {
-  navigator.virtualKeyboard.overlaysContent = true;
-  navigator.virtualKeyboard.show();
-}
 let fontLoader = new FontLoader();
 const font = fontLoader.parse( fontJson );
 const texLoader = new THREE.TextureLoader();

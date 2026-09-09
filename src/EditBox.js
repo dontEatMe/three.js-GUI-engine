@@ -52,25 +52,48 @@ class EditBoxText extends THREE.Object3D { // TODO for another objects with clic
 			this.remove(...this.children);
 			let textArr = Array.from(this.#text);
 			textArr.forEach((letter, letterIndex)=> {
-				const letterShapes = this.threeFont.generateShapes( letter, this.#size );
-				const group = new THREE.Group();
-				letterShapes.forEach((shape) => {
-					const geometry = new THREE.ShapeGeometry( shape );
-					geometry.computeBoundingBox();
-					group.add(new XRayMesh(geometry, this.#material));
-				});
-				let letterMinX = group.children.reduce((accumulator, letterPart) => {
-					return accumulator<letterPart.geometry.boundingBox.min.x ? accumulator : letterPart.geometry.boundingBox.min.x;
-				}, Infinity);
-				let letterMaxX = group.children.reduce((accumulator, letterPart) => {
-					return accumulator>letterPart.geometry.boundingBox.max.x ? accumulator : letterPart.geometry.boundingBox.max.x;
-				}, -Infinity);
-				let letterSize = Math.abs(letterMaxX - letterMinX);
-				group.position.x = this.children.length===0 ? 0 : this.children.slice(0,letterIndex).reduce((accumulator, letter) => {
-					return accumulator+letter.letterSize+this.#letterSpacing;
-				}, 0);
-				group.letterSize = letterSize;
-				this.add(group);
+				if (letter === ' ') { // hack for space symbol
+					const letterShapes = this.threeFont.generateShapes( 'x', this.#size );
+					const group = new THREE.Group();
+					letterShapes.forEach((shape) => {
+						const geometry = new THREE.ShapeGeometry( shape );
+						geometry.computeBoundingBox();
+						group.add(new XRayMesh(geometry, this.#material));
+					});
+					let letterMinX = group.children.reduce((accumulator, letterPart) => {
+						return accumulator<letterPart.geometry.boundingBox.min.x ? accumulator : letterPart.geometry.boundingBox.min.x;
+					}, Infinity);
+					let letterMaxX = group.children.reduce((accumulator, letterPart) => {
+						return accumulator>letterPart.geometry.boundingBox.max.x ? accumulator : letterPart.geometry.boundingBox.max.x;
+					}, -Infinity);
+					let letterSize = Math.abs(letterMaxX - letterMinX);
+					const spaceGroup = new THREE.Group();
+					spaceGroup.position.x = this.children.length===0 ? 0 : this.children.slice(0,letterIndex).reduce((accumulator, letter) => {
+						return accumulator+letter.letterSize+this.#letterSpacing;
+					}, 0);
+					spaceGroup.letterSize = letterSize;
+					this.add(spaceGroup);
+				} else {
+					const letterShapes = this.threeFont.generateShapes( letter, this.#size );
+					const group = new THREE.Group();
+					letterShapes.forEach((shape) => {
+						const geometry = new THREE.ShapeGeometry( shape );
+						geometry.computeBoundingBox();
+						group.add(new XRayMesh(geometry, this.#material));
+					});
+					let letterMinX = group.children.reduce((accumulator, letterPart) => {
+						return accumulator<letterPart.geometry.boundingBox.min.x ? accumulator : letterPart.geometry.boundingBox.min.x;
+					}, Infinity);
+					let letterMaxX = group.children.reduce((accumulator, letterPart) => {
+						return accumulator>letterPart.geometry.boundingBox.max.x ? accumulator : letterPart.geometry.boundingBox.max.x;
+					}, -Infinity);
+					let letterSize = Math.abs(letterMaxX - letterMinX);
+					group.position.x = this.children.length===0 ? 0 : this.children.slice(0,letterIndex).reduce((accumulator, letter) => {
+						return accumulator+letter.letterSize+this.#letterSpacing;
+					}, 0);
+					group.letterSize = letterSize;
+					this.add(group);
+				}
 			});
 		}
 	}
